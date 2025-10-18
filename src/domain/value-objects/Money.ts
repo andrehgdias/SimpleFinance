@@ -4,6 +4,10 @@ export enum Currency { // TODO Support other currencies / locales
 
 export class Money {
     constructor(public readonly amount: number, public readonly currency: Currency) {
+        if (amount === 0) {
+            throw new Error('Amount cannot be ZERO');
+        }
+
         if (amount < 0) {
             throw new Error('Amount cannot be negative');
         }
