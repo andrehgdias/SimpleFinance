@@ -1,4 +1,4 @@
-import {describe, expect, it, test} from "vitest";
+import {describe, expect, it} from "vitest";
 import {Currency, Money} from "../../../../src/domain/value-objects/Money";
 
 describe("Money Value Object", () => {
@@ -16,6 +16,11 @@ describe("Money Value Object", () => {
         expect(() => new Money(-42, Currency.USD)).toThrow("Amount cannot be negative")
     })
 
+    it("Should not allow amount 0", () => {
+        // Arrange, Act, Assert
+        expect(() => new Money(0, Currency.USD)).toThrow("Amount cannot be ZERO")
+    })
+
     it('Should format money with currency symbol', () => {
         // Arrange
         const money = new Money(1234.56, Currency.USD);
@@ -25,5 +30,5 @@ describe("Money Value Object", () => {
 
         // Assert
         expect(formatted).toBe('$1,234.56');
-    });
+    })
 })
