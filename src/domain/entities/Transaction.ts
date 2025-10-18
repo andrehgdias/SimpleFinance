@@ -6,8 +6,11 @@ export enum TransactionType {
 }
 
 export class Transaction {
-    // TODO makes id auto generated
-    constructor(public readonly id: string, public type: TransactionType, public amount: Money, public description: string, public date: Date) {
+    public readonly id: string
+
+    constructor(public type: TransactionType, public amount: Money, public description: string, public date: Date) {
+        this.id = crypto.randomUUID()
+
         if(!description || description.trim() === "") {
             throw new Error("Description is required")
         }
