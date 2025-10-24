@@ -3,8 +3,10 @@ import type {Currency} from "../../domain/value-objects/Money.ts";
 
 export type CreateTransactionDto = {
     type: TransactionType;
-    amount: number;
+    value: number;
     currency: Currency;
     description: string;
     date: Date;
 }
+
+export type UpdateTransactionDto = Partial<CreateTransactionDto>

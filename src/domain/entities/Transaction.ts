@@ -7,14 +7,27 @@ export enum TransactionType {
 
 export class Transaction {
     public readonly id: string
+    private _date: Date
 
-    constructor(public type: TransactionType, public amount: Money, public description: string, public date: Date) {
+    constructor(public type: TransactionType, public amount: Money, public description: string, date: Date) {
         this.id = crypto.randomUUID()
 
         if(!description || description.trim() === "") {
             throw new Error("Description is required")
         }
 
+        this._date = this.assertDate(date);
+    }
+
+    get date(): Date {
+        return this._date;
+    }
+
+    set date(value: Date) {
+        this._date = this.assertDate(value);
+    }
+
+    private assertDate(date: Date) {
         if (isNaN(date.getTime())) {
             throw new Error('Invalid date');
         }
@@ -26,5 +39,7 @@ export class Transaction {
         if (transactionDate > today) {
             throw new Error('Transaction date cannot be in the future');
         }
+
+        return date
     }
 }

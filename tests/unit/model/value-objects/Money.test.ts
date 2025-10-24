@@ -7,18 +7,18 @@ describe("Money Value Object", () => {
         const money = new Money(100, Currency.USD)
 
         // Act, Assert
-        expect(money.amount).toBe(100)
+        expect(money.value).toBe(100)
         expect(money.currency).toBe(Currency.USD)
     })
 
     it("Should not allow negative amount", () => {
         // Arrange, Act, Assert
-        expect(() => new Money(-42, Currency.USD)).toThrow("Amount cannot be negative")
+        expect(() => new Money(-42, Currency.USD)).toThrow("Value cannot be negative")
     })
 
     it("Should not allow amount 0", () => {
         // Arrange, Act, Assert
-        expect(() => new Money(0, Currency.USD)).toThrow("Amount cannot be ZERO")
+        expect(() => new Money(0, Currency.USD)).toThrow("Value cannot be ZERO")
     })
 
     it('Should format money with currency symbol', () => {
