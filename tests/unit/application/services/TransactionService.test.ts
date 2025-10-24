@@ -4,7 +4,7 @@ import {Currency, Money} from "../../../../src/domain/value-objects/Money";
 import type {CreateTransactionDto} from "../../../../src/application/dtos/CreateTransactionDto";
 import {TransactionService} from "../../../../src/application/services/TransactionService";
 import type {ITransactionRepository} from "../../../../src/application/interfaces/ITransactionRepository";
-import {NotFoundError} from "../../application/errors/NotFoundError"
+import {NotFoundError} from "../../../../src/application/errors/NotFoundError"
 
 describe("Transaction Service", () => {
     let transactionService: TransactionService;
@@ -79,7 +79,7 @@ describe("Transaction Service", () => {
 
         it('Should NOT find transaction by id', async () => {
             //Arrange
-            const id = "it-doesnt-matter"
+            const id = "missing-id"
             vi.mocked(mockTransactionRepository).findById.mockResolvedValue(null)
 
             // Act, Assert
