@@ -3,13 +3,13 @@ export enum Currency { // TODO Support other currencies / locales
 }
 
 export class Money {
-    constructor(public readonly amount: number, public readonly currency: Currency) {
-        if (amount === 0) {
-            throw new Error('Amount cannot be ZERO');
+    constructor(public readonly value: number, public readonly currency: Currency) {
+        if (value === 0) {
+            throw new Error('Value cannot be ZERO');
         }
 
-        if (amount < 0) {
-            throw new Error('Amount cannot be negative');
+        if (value < 0) {
+            throw new Error('Value cannot be negative');
         }
     }
 
@@ -17,7 +17,7 @@ export class Money {
      * Format amount with 2 decimals and add commas
      */
     format(): string {
-        const formattedAmount = this.amount.toLocaleString('en-US', { // TODO Support other locales
+        const formattedAmount = this.value.toLocaleString('en-US', { // TODO Support other locales
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
