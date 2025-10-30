@@ -15,6 +15,7 @@ describe("Transaction Service", () => {
       save: vi.fn(),
       findAll: vi.fn(),
       findById: vi.fn(),
+      delete: vi.fn(),
     }
     transactionService = new TransactionService(mockTransactionRepository)
   })
@@ -279,6 +280,36 @@ describe("Transaction Service", () => {
           }),
         ).rejects.toThrowError("Description is required")
       })
+    })
+  })
+
+  describe("Delete", function () {
+    it("Should delete a single transaction", async () => {
+      // Arrange
+      const existingTransaction = createTransactionStub()
+      const id = existingTransaction.id
+      vi.mocked(mockTransactionRepository).findById.mockResolvedValue(existingTransaction)
+      vi.mocked(mockTransactionRepository).delete.mockResolvedValue()
+
+      // Act
+      // Assert
+      await expect(transactionService.deleteTransaction(id)).resolves.toBe(undefined)
+
+      expect(mockTransactionRepository.findById).toHaveBeenCalledWith(id)
+      expect(mockTransactionRepository.delete).toHaveBeenCalledTimes(1)
+      expect(mockTransactionRepository.delete).toHaveBeenCalledWith(id)
+    })
+
+    it("Should throw due to transaction not found", async () => {
+      // Arrange
+      const id = "missing-transaction"
+      vi.mocked(mockTransactionRepository).findById.mockResolvedValue(null)
+
+      // Act, Assert
+      await expect(transactionService.deleteTransaction(id)).rejects.toThrowError(NotFoundError)
+
+      expect(mockTransactionRepository.findById).toHaveBeenCalledWith(id)
+      expect(mockTransactionRepository.delete).not.toHaveBeenCalled()
     })
   })
 
