@@ -23,7 +23,7 @@ export class TransactionService {
   }
 
   async getTransactionById(id: string): Promise<Transaction> {
-    const transaction: Transaction | null = await this.transactionRepository.findById(id)
+    const transaction = await this.transactionRepository.findById(id)
     if (!transaction) {
       throw new NotFoundError(`Transaction with id ${id} not found`)
     }
@@ -56,5 +56,13 @@ export class TransactionService {
     )
 
     return await this.transactionRepository.save(updatedTransaction)
+  }
+
+  async deleteTransaction(id: string): Promise<void> {
+    const transaction = await this.transactionRepository.findById(id)
+    if (!transaction) {
+      throw new NotFoundError(`Transaction with id ${id} not found`)
+    }
+    return await this.transactionRepository.delete(id)
   }
 }
