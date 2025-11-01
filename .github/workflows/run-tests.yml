@@ -1,0 +1,25 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js - Run Tests
+run-name: ${{ github.actor }} is running all tests 🧪
+
+on: [push, pull_request]
+
+env:
+  node-version: 24.x
+
+jobs:
+  set-up:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ env.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.node-version }}
+        cache: 'npm'
+    - name: Install dependencies
+    - run: npm ci
+    - name: Run tests
+    - run: npm run test:once
