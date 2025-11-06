@@ -1,10 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { Transaction, TransactionType } from "../../../../src/domain/entities/Transaction"
 import { Currency, Money } from "../../../../src/domain/value-objects/Money"
-import type { CreateTransactionDto, UpdateTransactionDto } from "../../../../src/application/dtos/TransactionDto"
-import { TransactionService } from "../../../../src/application/services/TransactionService"
+import {
+  CreateTransactionDto,
+  TransactionService,
+  UpdateTransactionDto,
+} from "../../../../src/application/services/TransactionService"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository"
 import { NotFoundError } from "../../../../src/application/errors/NotFoundError"
+import { createTransactionStub } from "../../../testUtils"
 
 describe("Transaction Service", () => {
   let transactionService: TransactionService
@@ -312,22 +316,4 @@ describe("Transaction Service", () => {
       expect(mockTransactionRepository.delete).not.toHaveBeenCalled()
     })
   })
-
-  function createTransactionStub(
-    overrides?: Partial<Pick<Transaction, "type" | "amount" | "description" | "date">>,
-  ): Transaction {
-    const parameters: Omit<Transaction, "id"> = {
-      type: TransactionType.INCOME,
-      amount: new Money(3000, Currency.USD),
-      description: "Salary",
-      date: new Date("2001-12-19"),
-      ...overrides,
-    }
-    return new Transaction(
-      parameters.type,
-      parameters.amount,
-      parameters.description,
-      parameters.date,
-    )
-  }
 })

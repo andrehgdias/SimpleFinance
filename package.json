@@ -8,13 +8,15 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:ui": "vitest --ui --coverage",
-    "test:once": "vitest run",
-    "coverage": "vitest run --coverage"
+    "test:ui": "vitest --ui",
+    "test:full": "vitest run",
+    "test:unit": "vitest run unit",
+    "test:integration": "vitest run integration"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "3.2.4",
     "@vitest/ui": "3.2.4",
+    "fake-indexeddb": "^6.2.4",
     "prettier": "^3.6.2",
     "typescript": "~5.9.3",
     "vite": "npm:rolldown-vite@7.1.14",
