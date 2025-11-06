@@ -1,8 +1,16 @@
-import type { CreateTransactionDto, UpdateTransactionDto } from "../dtos/TransactionDto.ts"
-import { Transaction } from "../../domain/entities/Transaction.ts"
-import { Money } from "../../domain/value-objects/Money.ts"
-import type { ITransactionRepository } from "../interfaces/ITransactionRepository.ts"
+import { Transaction, type TransactionType } from "../../domain/entities/Transaction.ts"
+import { type Currency, Money } from "../../domain/value-objects/Money.ts"
+import type { ITransactionRepository } from "../interfaces/ITransactionRepository.d.ts"
 import { NotFoundError } from "../errors/NotFoundError.ts"
+
+export type CreateTransactionDto = {
+  type: TransactionType
+  value: number
+  currency: Currency
+  description: string
+  date: Date
+}
+export type UpdateTransactionDto = Partial<CreateTransactionDto>
 
 export class TransactionService {
   constructor(private readonly transactionRepository: ITransactionRepository) {}
