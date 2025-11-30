@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import TransactionService, {
   type CreateTransactionDto,
-  type UpdateTransactionDto,
+  type UpdateTransactionDto
 } from "../../../../src/application/services/TransactionService"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository"
 import { createTransactionStub } from "../../../testUtils"
@@ -41,8 +41,6 @@ describe("Transaction Service", () => {
       const result: Transaction = await transactionService.createTransaction(createTransactionDTO)
 
       // Assert
-      // Service returns something
-      expect(result).toBeDefined()
       // Service returns a Transaction (not something else)
       expect(result).toBeInstanceOf(Transaction)
       expect(result.id).toBeTruthy()

@@ -33,6 +33,19 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
       // Assert
       expect(result).toStrictEqual(transaction)
     })
+
+    it("Should save all data", async function () {
+      // Arrange
+      const data = [createTransactionStub(), createTransactionStub()]
+      await transactionRepository.save(data[0])
+      await transactionRepository.save(data[1])
+
+      // Act
+      const allData = await transactionRepository.findAll()
+
+      // Assert
+      expect(allData).toEqual(data)
+    })
   })
 
   describe("Read", function () {

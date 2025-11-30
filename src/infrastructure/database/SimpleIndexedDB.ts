@@ -12,6 +12,10 @@ export default class SimpleIndexedDB {
     private stores: Array<StoreConfig>,
   ) {}
 
+  get isOpen() {
+    return !!this.db
+  }
+
   open(): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version)
@@ -39,39 +43,61 @@ export default class SimpleIndexedDB {
   }
 
   private getDb() {
-    if (!this.db) {
+    if (!this.isOpen) {
       throw new SimpleIndexedDBErrorWrapper(
         "getDb",
         new Error("Database not opened. Call open() first!"),
       )
     }
-    return this.db
+    return this.db as IDBDatabase
   }
 
-  async save<T>(objectStoreName: string, data: T): Promise<T> {
+  clearStore(objectStoreName: string) {
     return new Promise((resolve, reject) => {
       const db = this.getDb()
       const transaction = db.transaction([objectStoreName], "readwrite")
       const objectStore = transaction.objectStore(objectStoreName)
-      const putRequest = objectStore.put(data)
-      transaction.oncomplete = () => {
-        resolve(data)
+      const clearRequest = objectStore.clear()
+
+      transaction.oncomplete = () => resolve(clearRequest.result)
+      transaction.onerror = () => {
+        reject(
+          new SimpleIndexedDBErrorWrapper("clearStore", transaction.error || clearRequest.error),
+        )
       }
+    })
+  }
+
+  save<T>(objectStoreName: string, data: T): Promise<T>
+  save<T>(objectStoreName: string, data: T[]): Promise<T[]>
+  save<T>(objectStoreName: string, data: T | T[]): Promise<T | T[]> {
+    return new Promise((resolve, reject) => {
+      const db = this.getDb()
+      const transaction = db.transaction([objectStoreName], "readwrite")
+      const objectStore = transaction.objectStore(objectStoreName)
+
+      const items = Array.isArray(data) ? data : [data]
+      let putRequest: IDBRequest
+
+      for (const item of items) {
+        putRequest = objectStore.put(item)
+      }
+
+      transaction.oncomplete = () => resolve(data)
       transaction.onerror = () => {
         reject(new SimpleIndexedDBErrorWrapper("save", transaction.error || putRequest.error))
       }
     })
   }
 
-  async getAll<T>(objectStoreName: string): Promise<Array<T>> {
+  getAll<T>(objectStoreName: string): Promise<Array<T>> {
     return new Promise((resolve, reject) => {
       const db = this.getDb()
       const transaction = db.transaction([objectStoreName])
       const objectStore = transaction.objectStore(objectStoreName)
       const getAllRequest = objectStore.getAll()
-      transaction.oncomplete = () => {
-        resolve(getAllRequest.result)
-      }
+
+      transaction.oncomplete = () => resolve(getAllRequest.result)
       transaction.onerror = () => {
         reject(new SimpleIndexedDBErrorWrapper("getAll", transaction.error || getAllRequest.error))
       }
@@ -80,7 +106,10 @@ export default class SimpleIndexedDB {
 }
 
 export class SimpleIndexedDBErrorWrapper extends Error {
-  constructor(operation: "getDb" | "open" | "save" | "getAll", originalError: Error | null) {
+  constructor(
+    operation: "getDb" | "open" | "save" | "getAll" | "clearStore",
+    originalError: Error | null,
+  ) {
     const message = originalError
       ? `Failed to execute '${operation}' operation (${originalError?.name}): ${originalError?.message}`
       : `Failed to execute '${operation}' operation: Unknown error` // Shouldn't happen, handling it just in case
