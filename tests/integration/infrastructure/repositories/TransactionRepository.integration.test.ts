@@ -1,9 +1,9 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository"
-import { Transaction } from "../../../../src/domain/entities/Transaction"
+import Transaction from "../../../../src/domain/entities/Transaction"
 import { createTransactionStub } from "../../../testUtils"
 import SimpleIndexedDB from "../../../../src/infrastructure/database/SimpleIndexedDB"
-import { TransactionRepository } from "../../../../src/infrastructure/repositories/TransactionRepository"
+import TransactionRepository from "../../../../src/infrastructure/repositories/TransactionRepository"
 
 import "fake-indexeddb/auto" // Allow testing indexedDb at a nodejs environment
 

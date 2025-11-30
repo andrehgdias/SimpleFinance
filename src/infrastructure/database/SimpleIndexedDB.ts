@@ -40,7 +40,10 @@ export default class SimpleIndexedDB {
 
   private getDb() {
     if (!this.db) {
-      throw new Error("Database not opened. Call open() first!")
+      throw new SimpleIndexedDBErrorWrapper(
+        "getDb",
+        new Error("Database not opened. Call open() first!"),
+      )
     }
     return this.db
   }
@@ -55,7 +58,7 @@ export default class SimpleIndexedDB {
         resolve(data)
       }
       transaction.onerror = () => {
-        reject(putRequest.error)
+        reject(new SimpleIndexedDBErrorWrapper("save", transaction.error || putRequest.error))
       }
     })
   }
@@ -65,22 +68,22 @@ export default class SimpleIndexedDB {
       const db = this.getDb()
       const transaction = db.transaction([objectStoreName])
       const objectStore = transaction.objectStore(objectStoreName)
-      const getAllrequest = objectStore.getAll()
+      const getAllRequest = objectStore.getAll()
       transaction.oncomplete = () => {
-        resolve(getAllrequest.result)
+        resolve(getAllRequest.result)
       }
       transaction.onerror = () => {
-        reject(getAllrequest.error)
+        reject(new SimpleIndexedDBErrorWrapper("getAll", transaction.error || getAllRequest.error))
       }
     })
   }
 }
 
 export class SimpleIndexedDBErrorWrapper extends Error {
-  constructor(operation: "open", originalError: Error | null) {
+  constructor(operation: "getDb" | "open" | "save" | "getAll", originalError: Error | null) {
     const message = originalError
-      ? `Failed to ${operation} database (${originalError?.name}): ${originalError?.message}`
-      : `Failed to ${operation} database: Unknown error` // Shouldn't happen, handling it just in case
+      ? `Failed to execute '${operation}' operation (${originalError?.name}): ${originalError?.message}`
+      : `Failed to execute '${operation}' operation: Unknown error` // Shouldn't happen, handling it just in case
     super(message)
 
     this.name = "SimpleIndexedDBErrorWrapper"

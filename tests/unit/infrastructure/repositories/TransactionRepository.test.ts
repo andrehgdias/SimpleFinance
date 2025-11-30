@@ -1,26 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest"
-import {
+import TransactionRepository, {
   type PersistedTransaction,
-  TransactionRepository,
-} from "../../../../src/infrastructure/repositories/TransactionRepository"
-import { createTransactionStub } from "../../../testUtils"
-import { Transaction, TransactionType } from "../../../../src/domain/entities/Transaction"
-import { Currency } from "../../../../src/domain/value-objects/Money"
-import SimpleIndexedDB from "../../../../src/infrastructure/database/SimpleIndexedDB"
-
-class TestableTransactionRepository extends TransactionRepository {
-  constructor(mockIndexedDb: SimpleIndexedDB) {
-    super(mockIndexedDb)
-  }
-
-  callToDomain(raw: PersistedTransaction) {
-    return super.toDomain(raw)
-  }
-
-  callToPersistence(entity: Transaction) {
-    return super.toPersistence(entity)
-  }
-}
+} from "../../../../src/infrastructure/repositories/TransactionRepository.ts"
+import { createTransactionStub } from "../../../testUtils.ts"
+import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
+import { Currency } from "../../../../src/domain/value-objects/Money.ts"
+import SimpleIndexedDB from "../../../../src/infrastructure/database/SimpleIndexedDB.ts"
 
 describe("TransactionRepository", () => {
   let transactionRepository: TestableTransactionRepository
@@ -90,3 +75,17 @@ describe("TransactionRepository", () => {
     })
   })
 })
+
+class TestableTransactionRepository extends TransactionRepository {
+  constructor(mockIndexedDb: SimpleIndexedDB) {
+    super(mockIndexedDb)
+  }
+
+  callToDomain(raw: PersistedTransaction) {
+    return super.toDomain(raw)
+  }
+
+  callToPersistence(entity: Transaction) {
+    return super.toPersistence(entity)
+  }
+}

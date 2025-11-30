@@ -1,14 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { Transaction, TransactionType } from "../../../../src/domain/entities/Transaction"
-import { Currency, Money } from "../../../../src/domain/value-objects/Money"
-import {
-  CreateTransactionDto,
-  TransactionService,
-  UpdateTransactionDto,
+import TransactionService, {
+  type CreateTransactionDto,
+  type UpdateTransactionDto,
 } from "../../../../src/application/services/TransactionService"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository"
-import { NotFoundError } from "../../../../src/application/errors/NotFoundError"
 import { createTransactionStub } from "../../../testUtils"
+import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
+import Money, { Currency } from "../../../../src/domain/value-objects/Money.ts"
+import NotFoundError from "../../../../src/application/errors/NotFoundError.ts"
 
 describe("Transaction Service", () => {
   let transactionService: TransactionService

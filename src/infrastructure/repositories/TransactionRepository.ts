@@ -1,7 +1,7 @@
 import type { ITransactionRepository } from "../../application/interfaces/ITransactionRepository.d.ts"
-import { Transaction } from "../../domain/entities/Transaction.ts"
+import Transaction from "../../domain/entities/Transaction.ts"
 import type SimpleIndexedDB from "../database/SimpleIndexedDB.ts"
-import { Money } from "../../domain/value-objects/Money.ts"
+import Money from "../../domain/value-objects/Money.ts"
 import { BaseRepository } from "../BaseRepository.ts"
 
 export type PersistedTransaction = {
@@ -13,7 +13,7 @@ export type PersistedTransaction = {
   description: string
 }
 
-export class TransactionRepository
+export default class TransactionRepository
   extends BaseRepository<Transaction, PersistedTransaction>
   implements ITransactionRepository
 {

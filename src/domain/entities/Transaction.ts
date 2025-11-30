@@ -1,11 +1,11 @@
-import type { Money } from "../value-objects/Money.ts"
+import type Money from "../value-objects/Money.ts"
 
 export enum TransactionType {
   INCOME,
   OUTCOME,
 }
 
-export class Transaction {
+export default class Transaction {
   public readonly id: string
   private _date: Date
 

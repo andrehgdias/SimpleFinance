@@ -1,5 +1,5 @@
-import { Transaction, TransactionType } from "../src/domain/entities/Transaction"
-import { Currency, Money } from "../src/domain/value-objects/Money"
+import Transaction, { TransactionType } from "../src/domain/entities/Transaction"
+import Money, { Currency } from "../src/domain/value-objects/Money"
 
 export function createTransactionStub(
   overrides?: Partial<Pick<Transaction, "type" | "amount" | "description" | "date">>,
