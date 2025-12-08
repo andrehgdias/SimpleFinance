@@ -63,8 +63,16 @@ export default class TransactionRepository
     return transactions
   }
 
-  findById(id: string): Promise<Transaction | null> {
-    throw new Error("Method not implemented.")
+  async findById(id: string): Promise<Transaction | null> {
+    const result: PersistedTransaction | undefined = await this.indexedDBInstance.get(
+      this.STORE_NAME,
+      id,
+    )
+    if (!result) {
+      return null
+    }
+
+    return this.toDomain(result)
   }
 
   delete(id: string): Promise<void> {

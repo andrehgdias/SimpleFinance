@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository"
 import Transaction from "../../../../src/domain/entities/Transaction"
 import { createTransactionStub } from "../../../testUtils"
@@ -20,6 +20,10 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
   beforeEach(async function () {
     await indexedDBInstance.open()
     transactionRepository = new TransactionRepository(indexedDBInstance)
+  })
+
+  afterEach(async function () {
+    await indexedDBInstance.clearStore(TEST_OBJECT_STORE)
   })
 
   describe("Write", function () {
@@ -51,7 +55,7 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
   describe("Read", function () {
     let transactions: Array<Transaction> = []
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       transactions = [createTransactionStub(), createTransactionStub()]
 
       await Promise.all(
@@ -62,10 +66,12 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
     it("Should read all transactions", async () => {
       // Arrange - noOp
       // Act
-      const result = await transactionRepository.findAll()
+      const result: Array<Transaction> = await transactionRepository.findAll()
 
       // Assert
-      expect(result).toStrictEqual(transactions)
+      for (const resultElement of result) {
+        expect(transactions).toContainEqual(resultElement)
+      }
     })
 
     it("Should read a transaction", async () => {

@@ -103,11 +103,25 @@ export default class SimpleIndexedDB {
       }
     })
   }
+
+  get<T>(objectStoreName: string, id: string): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const db = this.getDb()
+      const transaction = db.transaction(objectStoreName, "readwrite")
+      const objectStore = transaction.objectStore(objectStoreName)
+      const getRequest = objectStore.get(id)
+
+      transaction.oncomplete = () => resolve(getRequest.result)
+      transaction.onerror = () => {
+        reject(new SimpleIndexedDBErrorWrapper("get", transaction.error || getRequest.error))
+      }
+    })
+  }
 }
 
 export class SimpleIndexedDBErrorWrapper extends Error {
   constructor(
-    operation: "getDb" | "open" | "save" | "getAll" | "clearStore",
+    operation: "getDb" | "open" | "save" | "getAll" | "clearStore" | "get",
     originalError: Error | null,
   ) {
     const message = originalError
