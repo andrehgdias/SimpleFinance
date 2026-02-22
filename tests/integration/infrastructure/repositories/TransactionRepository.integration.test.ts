@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository"
+import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository.ts"
 import Transaction from "../../../../src/domain/entities/Transaction"
 import { createTransactionStub } from "../../../testUtils"
 import SimpleIndexedDB from "../../../../src/infrastructure/database/SimpleIndexedDB"

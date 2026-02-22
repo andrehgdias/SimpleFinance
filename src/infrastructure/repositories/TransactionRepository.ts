@@ -1,4 +1,4 @@
-import type { ITransactionRepository } from "../../application/interfaces/ITransactionRepository.d.ts"
+import type { ITransactionRepository } from "../../application/interfaces/ITransactionRepository.ts"
 import Transaction from "../../domain/entities/Transaction.ts"
 import type SimpleIndexedDB from "../database/SimpleIndexedDB.ts"
 import Money from "../../domain/value-objects/Money.ts"

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import TransactionService, {
   type CreateTransactionDto,
-  type UpdateTransactionDto
+  type UpdateTransactionDto,
 } from "../../../../src/application/services/TransactionService"
-import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository"
+import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository.ts"
 import { createTransactionStub } from "../../../testUtils"
 import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import Money, { Currency } from "../../../../src/domain/value-objects/Money.ts"
