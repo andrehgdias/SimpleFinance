@@ -1,6 +1,6 @@
 import "./style.css"
 import { render } from "solid-js/web"
-import App from "./components/app.tsx"
+import App from "./ui/app.tsx"
 
 const root = document.getElementById("root")
 

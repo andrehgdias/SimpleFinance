@@ -6,7 +6,7 @@ describe("Transaction Entity", () => {
   it("Should create a valid transaction of type income", () => {
     // Arrange
     const type = TransactionType.INCOME
-    const amount = new Money(1500, Currency.USD)
+    const amount = new Money(1500, Currency.EUR)
     const description = "Salary"
     const date = new Date()
 
@@ -25,7 +25,7 @@ describe("Transaction Entity", () => {
   it("Should create a valid transaction of type outcome", () => {
     // Arrange
     const type = TransactionType.OUTCOME
-    const amount = new Money(300, Currency.USD)
+    const amount = new Money(300, Currency.EUR)
     const description = "Brother Gift"
     const date = new Date()
 
@@ -44,7 +44,7 @@ describe("Transaction Entity", () => {
   it("Should not allow empty description", () => {
     // Arrange
     const type = TransactionType.INCOME
-    const amount = new Money(1500, Currency.USD)
+    const amount = new Money(1500, Currency.EUR)
     const description = " "
     const date = new Date()
 
@@ -57,7 +57,7 @@ describe("Transaction Entity", () => {
   it("Should not allow future date", () => {
     // Arrange
     const type = TransactionType.INCOME
-    const amount = new Money(1500, Currency.USD)
+    const amount = new Money(1500, Currency.EUR)
     const description = "Next month Salary"
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
@@ -70,7 +70,7 @@ describe("Transaction Entity", () => {
 
   it("Should not allow invalid date", () => {
     // Arrange
-    const amount = new Money(100, Currency.USD)
+    const amount = new Money(100, Currency.EUR)
     const type = TransactionType.INCOME
     const invalidDate = new Date("invalid")
 

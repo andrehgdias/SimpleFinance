@@ -43,7 +43,7 @@ describe("TransactionRepository", () => {
         date: new Date("2001-12-19").getTime(),
         type: TransactionType.INCOME,
         amountValue: 1000,
-        amountCurrency: Currency.USD,
+        amountCurrency: Currency.EUR,
         description: "First part of month salary",
       }
 
@@ -66,7 +66,7 @@ describe("TransactionRepository", () => {
         date: NaN,
         type: TransactionType.INCOME,
         amountValue: 100,
-        amountCurrency: Currency.USD,
+        amountCurrency: Currency.EUR,
         description: "My desc",
       }
 

@@ -42,7 +42,7 @@ export default class Transaction {
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const transactionDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    if (transactionDate > today) {
+    if (transactionDate.getTime() > today.getTime()) {
       throw new Error("Transaction date cannot be in the future")
     }
 
