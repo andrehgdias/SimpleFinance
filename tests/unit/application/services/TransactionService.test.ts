@@ -29,7 +29,7 @@ describe("Transaction Service", () => {
       const createTransactionDTO: CreateTransactionDto = {
         type: TransactionType.INCOME,
         value: 100,
-        currency: Currency.USD,
+        currency: Currency.EUR,
         description: "Refund",
         date: new Date("2001-12-19"),
       }
@@ -229,7 +229,7 @@ describe("Transaction Service", () => {
 
         const type = TransactionType.OUTCOME
         const value = 1200
-        const currency = Currency.USD
+        const currency = Currency.EUR
         const description = "Mac book Air"
         const date = new Date("1999-12-13")
         const changes: UpdateTransactionDto = {

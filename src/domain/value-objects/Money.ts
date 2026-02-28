@@ -1,6 +1,6 @@
 export enum Currency {
   // TODO Support other currencies / locales
-  USD,
+  EUR,
 }
 
 export default class Money {

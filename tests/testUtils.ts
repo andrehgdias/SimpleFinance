@@ -6,7 +6,7 @@ export function createTransactionStub(
 ): Transaction {
   const parameters: Omit<Transaction, "id"> = {
     type: TransactionType.INCOME,
-    amount: new Money(3000, Currency.USD),
+    amount: new Money(3000, Currency.EUR),
     description: "Salary",
     date: new Date("2001-12-19"),
     ...overrides,
