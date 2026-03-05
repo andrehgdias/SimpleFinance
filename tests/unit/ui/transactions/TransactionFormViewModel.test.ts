@@ -8,7 +8,7 @@ import { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import { Currency } from "../../../../src/domain/value-objects/Money.ts"
 
 describe("TransactionFormViewModel", async () => {
-  const NOW_STR = "2001-12-19"
+  const REFERENCE_DATE_ISO = "2026-12-19"
   let mockTransactionCreator: TransactionCreator
 
   beforeEach(() => {
@@ -41,7 +41,7 @@ describe("TransactionFormViewModel", async () => {
     }
 
     // Act
-    const model = new TransactionFormViewModel(mockTransactionCreator, NOW_STR)
+    const model = new TransactionFormViewModel(mockTransactionCreator, REFERENCE_DATE_ISO)
 
     //Assert
     expect(model.state.draft).toStrictEqual(initialState.draft)
@@ -54,7 +54,7 @@ describe("TransactionFormViewModel", async () => {
     let model: TransactionFormViewModel
 
     beforeEach(() => {
-      model = new TransactionFormViewModel(mockTransactionCreator, NOW_STR)
+      model = new TransactionFormViewModel(mockTransactionCreator, REFERENCE_DATE_ISO)
       vi.useFakeTimers()
     })
 
@@ -99,15 +99,42 @@ describe("TransactionFormViewModel", async () => {
     })
 
     describe("Description", () => {
-      it("Should set description error when description is empty/blank", () => {})
-      it("Should clear description error when description becomes valid", () => {})
+      it("Should set description error when description is empty/blank", () => {
+        // Arrange
+        // Act
+        model.setDescription("")
+        // Assert
+        expect(model.state.errors.fields.description).toBe("Description is required")
+      })
+      it("Should clear description error when description becomes valid", () => {
+        // Arrange
+        model.setDescription("")
+        // Act
+        model.setDescription("Dinner with friends")
+        //Assert
+        expect(model.state.errors.fields.description).toBeNull()
+      })
     })
 
     describe("Date", () => {
-      it("Should set date error when date is empty", () => {})
-      it("Should set date error when date is invalid", () => {})
-      it("Should set date error when date is in the future", () => {})
-      it("Should clear date error when date becomes valid", () => {})
+      it("Should set date error when date is empty", () => {
+        model.setDate("")
+        expect(model.state.errors.fields.date).toBe("Date is required")
+      })
+      it("Should set date error when date is invalid", () => {
+        model.setDate("invalid-date")
+        expect(model.state.errors.fields.date).toBe(
+          "Date should be valid and in ISO format (YYYY-MM-DD)",
+        )
+      })
+      it("Should set date error when date is in the future", () => {
+        model.setDate("2027-12-03")
+        expect(model.state.errors.fields.date).toBe("Date cannot be in the future")
+      })
+      it("Should clear date error when date becomes valid", () => {
+        model.setDate("2026-12-03")
+        expect(model.state.errors.fields.date).toBeNull()
+      })
     })
   })
 
