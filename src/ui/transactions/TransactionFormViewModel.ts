@@ -39,10 +39,13 @@ export class TransactionFormViewModel {
 
   readonly isValid: Accessor<boolean>
 
+  private readonly referenceDate: Date
+
   constructor(
     private readonly transactionCreator: TransactionCreator,
-    private readonly now: string,
+    referenceDateISO: string,
   ) {
+    this.referenceDate = new Date(referenceDateISO)
     const [state, setState] = createStore<TransactionFormState>({
       draft: {
         type: TransactionType.INCOME,
@@ -102,18 +105,26 @@ export class TransactionFormViewModel {
   }
 
   private assertValidDescription(): string | null {
-    // FIXME check for field validity
-    return "Has error"
+    if (this.state.draft.description.trim() === "") {
+      return "Description is required"
+    }
+    return null
   }
 
   private assertValidDate(): string | null {
-    // FIXME check for field validity
-    return "Has error"
+    const trimmed = this.state.draft.date.trim()
+    if (trimmed === "") return "Date is required"
+
+    const date = new Date(trimmed)
+    if (isNaN(date.getTime())) return "Date should be valid and in ISO format (YYYY-MM-DD)"
+
+    if (date.getTime() > this.referenceDate.getTime()) return "Date cannot be in the future"
+
+    return null
   }
 
   private assertValidAmount(): string | null {
     const trimmed = this.state.draft.amount.trim()
-
     if (trimmed === "") return "Amount is required"
 
     if (isNaN(Number(trimmed))) return "Amount must be a valid number"
