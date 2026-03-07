@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import TransactionRepository, {
   type PersistedTransaction,
 } from "../../../../src/infrastructure/repositories/TransactionRepository.ts"
-import { createTransactionStub } from "../../../testUtils.ts"
+import { buildTransaction } from "../../../testUtils.ts"
 import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import { Currency } from "../../../../src/domain/value-objects/Money.ts"
 import SimpleIndexedDB from "../../../../src/infrastructure/database/SimpleIndexedDB.ts"
@@ -18,7 +18,7 @@ describe("TransactionRepository", () => {
   describe("Entity Mapper", () => {
     it("Should map a Transaction instance to a PersistedTransaction", () => {
       // Arrange
-      const transaction = createTransactionStub()
+      const transaction = buildTransaction()
       const expectedPojo = {
         id: transaction.id,
         date: transaction.date.getTime(),

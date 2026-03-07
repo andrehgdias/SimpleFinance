@@ -1,7 +1,7 @@
 import Transaction, { TransactionType } from "../src/domain/entities/Transaction"
 import Money, { Currency } from "../src/domain/value-objects/Money"
 
-export function createTransactionStub(
+export function buildTransaction(
   overrides?: Partial<Pick<Transaction, "type" | "amount" | "description" | "date">>,
 ): Transaction {
   const parameters: Omit<Transaction, "id"> = {

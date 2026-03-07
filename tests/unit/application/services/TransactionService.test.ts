@@ -4,7 +4,7 @@ import TransactionService, {
   type UpdateTransactionDto,
 } from "../../../../src/application/services/TransactionService"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository.ts"
-import { createTransactionStub } from "../../../testUtils"
+import { buildTransaction } from "../../../testUtils"
 import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import Money, { Currency } from "../../../../src/domain/value-objects/Money.ts"
 import NotFoundError from "../../../../src/application/errors/NotFoundError.ts"
@@ -55,7 +55,7 @@ describe("Transaction Service", () => {
   describe("Read", function () {
     it("Should find all transactions", async () => {
       //Arrange
-      const allTransactions = [createTransactionStub(), createTransactionStub()]
+      const allTransactions = [buildTransaction(), buildTransaction()]
       vi.mocked(mockTransactionRepository).findAll.mockResolvedValue(allTransactions)
 
       // Act
@@ -68,7 +68,7 @@ describe("Transaction Service", () => {
 
     it("Should find transaction by id", async () => {
       //Arrange
-      const transactionStub = createTransactionStub()
+      const transactionStub = buildTransaction()
       const id = transactionStub.id
       vi.mocked(mockTransactionRepository).findById.mockResolvedValue(transactionStub)
 
@@ -97,7 +97,7 @@ describe("Transaction Service", () => {
     describe("Success", function () {
       it("Field type", async () => {
         // Arrange
-        const existingTransaction = createTransactionStub()
+        const existingTransaction = buildTransaction()
         const id = existingTransaction.id
         const type: TransactionType = TransactionType.OUTCOME
         const changes: UpdateTransactionDto = {
@@ -127,7 +127,7 @@ describe("Transaction Service", () => {
 
       it("Field description", async () => {
         // Arrange
-        const existingTransaction = createTransactionStub()
+        const existingTransaction = buildTransaction()
         const id = existingTransaction.id
         const description = "Mac book Air"
         const changes: UpdateTransactionDto = {
@@ -157,7 +157,7 @@ describe("Transaction Service", () => {
 
       it("Field amount, update value", async () => {
         // Arrange
-        const existingTransaction = createTransactionStub()
+        const existingTransaction = buildTransaction()
         const id = existingTransaction.id
         const value = 5000
         const changes: UpdateTransactionDto = {
@@ -189,7 +189,7 @@ describe("Transaction Service", () => {
 
       it("Field date", async () => {
         // Arrange
-        const existingTransaction = createTransactionStub()
+        const existingTransaction = buildTransaction()
         const id = existingTransaction.id
         const date = new Date("1970-12-31")
         const changes: UpdateTransactionDto = {
@@ -219,7 +219,7 @@ describe("Transaction Service", () => {
 
       it("Should update all fields transaction", async () => {
         // Arrange
-        const existingTransaction = createTransactionStub()
+        const existingTransaction = buildTransaction()
         const id = existingTransaction.id
 
         vi.mocked(mockTransactionRepository).findById.mockResolvedValue(existingTransaction)
@@ -271,7 +271,7 @@ describe("Transaction Service", () => {
 
       it("Should bubble Transaction::class errors", async () => {
         // Arrange
-        const transactionStub = createTransactionStub()
+        const transactionStub = buildTransaction()
         vi.mocked(mockTransactionRepository).findById.mockResolvedValue(transactionStub)
 
         // Act, Assert
@@ -287,7 +287,7 @@ describe("Transaction Service", () => {
   describe("Delete", function () {
     it("Should delete a single transaction", async () => {
       // Arrange
-      const existingTransaction = createTransactionStub()
+      const existingTransaction = buildTransaction()
       const id = existingTransaction.id
       vi.mocked(mockTransactionRepository).findById.mockResolvedValue(existingTransaction)
       vi.mocked(mockTransactionRepository).delete.mockResolvedValue()
