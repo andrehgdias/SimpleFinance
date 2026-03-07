@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository.ts"
 import Transaction from "../../../../src/domain/entities/Transaction"
-import { createTransactionStub } from "../../../testUtils"
+import { buildTransaction } from "../../../testUtils"
 import SimpleIndexedDB from "../../../../src/infrastructure/database/SimpleIndexedDB"
 import TransactionRepository from "../../../../src/infrastructure/repositories/TransactionRepository"
 
@@ -29,7 +29,7 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
   describe("Write", function () {
     it("Should create a transaction", async () => {
       // Arrange
-      const transaction: Transaction = createTransactionStub()
+      const transaction: Transaction = buildTransaction()
 
       // Act
       const result = await transactionRepository.save(transaction)
@@ -40,7 +40,7 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
 
     it("Should save all data", async function () {
       // Arrange
-      const data = [createTransactionStub(), createTransactionStub()]
+      const data = [buildTransaction(), buildTransaction()]
       await transactionRepository.save(data[0])
       await transactionRepository.save(data[1])
 
@@ -56,7 +56,7 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
     let transactions: Array<Transaction> = []
 
     beforeEach(async () => {
-      transactions = [createTransactionStub(), createTransactionStub()]
+      transactions = [buildTransaction(), buildTransaction()]
 
       await Promise.all(
         transactions.map(async transaction => transactionRepository.save(transaction)),
@@ -101,7 +101,7 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
   describe("Delete", function () {
     it("Should delete a transaction", async () => {
       // Arrange
-      const transaction = createTransactionStub()
+      const transaction = buildTransaction()
       await transactionRepository.save(transaction)
       const transactionId = transaction.id
 
