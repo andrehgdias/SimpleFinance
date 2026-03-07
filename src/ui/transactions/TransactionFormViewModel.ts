@@ -46,6 +46,7 @@ export class TransactionFormViewModel {
     referenceDateISO: string,
   ) {
     this.referenceDate = new Date(referenceDateISO)
+
     const [state, setState] = createStore<TransactionFormState>({
       draft: {
         type: TransactionType.INCOME,
@@ -60,29 +61,26 @@ export class TransactionFormViewModel {
         lastSubmitErrorMessage: null,
       },
     })
-
     this.state = state
     this.setState = setState
 
-    const [isSubmitting, setSubmitting] = createSignal(false)
-
-    const isValid = createMemo(() => {
+    this.isValid = createMemo(() => {
       const descriptionError = this.assertValidDescription()
       const dateError = this.assertValidDate()
       const amountError = this.assertValidAmount()
 
-      const hasNoFieldErrors =
-        !this.hasErrorMessage(descriptionError) &&
-        !this.hasErrorMessage(dateError) &&
-        !this.hasErrorMessage(amountError)
-      const hasNoFormErrors = !this.hasErrorMessage(this.state.errors.formError)
-      return hasNoFieldErrors && hasNoFormErrors
+      const hasFieldErrors =
+        this.hasErrorMessage(descriptionError) ||
+        this.hasErrorMessage(dateError) ||
+        this.hasErrorMessage(amountError)
+      const hasFormErrors = this.hasErrorMessage(this.state.errors.formError)
+
+      return !hasFieldErrors && !hasFormErrors
     })
 
+    const [isSubmitting, setSubmitting] = createSignal(false)
     this.isSubmitting = isSubmitting
     this.setSubmitting = setSubmitting
-
-    this.isValid = isValid
   }
 
   setDescription(value: string) {
