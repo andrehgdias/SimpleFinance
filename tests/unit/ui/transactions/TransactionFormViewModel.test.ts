@@ -1,21 +1,31 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   type TransactionCreator,
   type TransactionFormState,
   TransactionFormViewModel
 } from "../../../../src/ui/transactions/TransactionFormViewModel.ts"
-import { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
+import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import { Currency } from "../../../../src/domain/value-objects/Money.ts"
+import { createRoot } from "solid-js"
+import type { CreateTransactionDto } from "../../../../src/application/services/TransactionService.ts"
+import { buildTransaction } from "../../../testUtils.ts"
 
 describe("TransactionFormViewModel", async () => {
   const REFERENCE_DATE_ISO = "2026-12-19"
   let mockTransactionCreator: TransactionCreator
+  let model: TransactionFormViewModel
+
+  let reactivityRoot: () => void
 
   beforeEach(() => {
-    mockTransactionCreator = {
-      createTransaction: vi.fn(),
-    }
+    mockTransactionCreator = { createTransaction: vi.fn() }
+    reactivityRoot = createRoot(d => {
+      model = new TransactionFormViewModel(mockTransactionCreator, REFERENCE_DATE_ISO)
+      return d
+    })
   })
+
+  afterEach(() => reactivityRoot())
 
   it("Should initialize with default type/currency and empty draft/errors", () => {
     // Arrange
@@ -40,9 +50,6 @@ describe("TransactionFormViewModel", async () => {
       isValid: false,
     }
 
-    // Act
-    const model = new TransactionFormViewModel(mockTransactionCreator, REFERENCE_DATE_ISO)
-
     //Assert
     expect(model.state.draft).toStrictEqual(initialState.draft)
     expect(model.state.errors).toStrictEqual(initialState.errors)
@@ -51,13 +58,6 @@ describe("TransactionFormViewModel", async () => {
   })
 
   describe("Validate as you type", () => {
-    let model: TransactionFormViewModel
-
-    beforeEach(() => {
-      model = new TransactionFormViewModel(mockTransactionCreator, REFERENCE_DATE_ISO)
-      vi.useFakeTimers()
-    })
-
     describe("Amount", () => {
       it("Should set amount error when amount is empty", () => {
         // Arrange
@@ -139,8 +139,23 @@ describe("TransactionFormViewModel", async () => {
   })
 
   describe("isValid", () => {
-    it("Should be false when there is any field error", () => {})
-    it("Should be true when all fields are valid", () => {})
+    it("Should be false when not all required fields are filled", () => {
+      model.setAmount("42")
+      model.setDescription(
+        "The answer to the Ultimate Question of Life, the Universe, and Everything",
+      )
+
+      expect(model.isValid()).toBe(false) // We did not set date but it is required
+    })
+    it("Should be true when all fields are valid", () => {
+      model.setAmount("-100")
+
+      model.setAmount("10")
+      model.setDescription("Saturday coffee")
+      model.setDate("2026-12-13")
+
+      expect(model.isValid()).toBe(true)
+    })
   })
 
   describe("Submit", () => {
@@ -149,8 +164,8 @@ describe("TransactionFormViewModel", async () => {
     })
 
     describe("With errors", () => {
-      it("Should not call service when invalid and should expose field errors", () => {})
-      it("Should map application/domain error into form error when service throws", () => {})
+      it.todo("Should not call service when invalid and should expose field errors", () => {})
+      it.todo("Should map application/domain error into form error when service throws", () => {})
     })
   })
 })
