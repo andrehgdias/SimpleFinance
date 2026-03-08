@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import Money, { Currency } from "../../../../src/domain/value-objects/Money.ts"
+import { TEST_REFERENCE_DATE } from "../../../testUtils.ts"
 
 describe("Transaction Entity", () => {
   it("Should create a valid transaction of type income", () => {
@@ -11,7 +12,7 @@ describe("Transaction Entity", () => {
     const date = new Date()
 
     // Act
-    const transaction = new Transaction(type, amount, description, date)
+    const transaction = new Transaction(type, amount, description, date, TEST_REFERENCE_DATE)
 
     // Assert
     expect(transaction.id).toBeTypeOf("string")
@@ -30,7 +31,7 @@ describe("Transaction Entity", () => {
     const date = new Date()
 
     // Act
-    const transaction = new Transaction(type, amount, description, date)
+    const transaction = new Transaction(type, amount, description, date, TEST_REFERENCE_DATE)
 
     // Assert
     expect(transaction.id).toBeTypeOf("string")
@@ -49,9 +50,9 @@ describe("Transaction Entity", () => {
     const date = new Date()
 
     // Act
-    expect(() => new Transaction(type, amount, description, date)).toThrowError(
-      "Description is required",
-    )
+    expect(
+      () => new Transaction(type, amount, description, date, TEST_REFERENCE_DATE),
+    ).toThrowError("Description is required")
   })
 
   it("Should not allow future date", () => {
@@ -59,13 +60,11 @@ describe("Transaction Entity", () => {
     const type = TransactionType.INCOME
     const amount = new Money(1500, Currency.EUR)
     const description = "Next month Salary"
-    const tomorrow = new Date()
-    tomorrow.setDate(tomorrow.getDate() + 1)
 
     // Act, Assert
-    expect(() => new Transaction(type, amount, description, tomorrow)).toThrowError(
-      "Transaction date cannot be in the future",
-    )
+    expect(
+      () => new Transaction(type, amount, description, new Date("2027-01-01"), TEST_REFERENCE_DATE),
+    ).toThrowError("Transaction date cannot be in the future")
   })
 
   it("Should not allow invalid date", () => {
@@ -76,7 +75,7 @@ describe("Transaction Entity", () => {
 
     // Act, Assert
     expect(() => {
-      new Transaction(type, amount, "Salary", invalidDate)
+      new Transaction(type, amount, "Salary", invalidDate, TEST_REFERENCE_DATE)
     }).toThrowError("Invalid date")
   })
 })

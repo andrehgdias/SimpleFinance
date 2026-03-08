@@ -40,6 +40,7 @@ export default class TransactionRepository
       new Money(raw.amountValue, raw.amountCurrency),
       raw.description,
       new Date(raw.date),
+      new Date(raw.date + 1), // We just want to create a Transaction instance so add 1ms as reference date should be enough
       raw.id,
     )
   }

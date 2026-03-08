@@ -13,7 +13,10 @@ export type CreateTransactionDto = {
 export type UpdateTransactionDto = Partial<CreateTransactionDto>
 
 export default class TransactionService {
-  constructor(private readonly transactionRepository: ITransactionRepository) {}
+  constructor(
+    private readonly transactionRepository: ITransactionRepository,
+    private readonly referenceDate: Date,
+  ) {}
 
   async createTransaction({
     type,
@@ -22,7 +25,13 @@ export default class TransactionService {
     description,
     date,
   }: CreateTransactionDto): Promise<Transaction> {
-    const newTransaction = new Transaction(type, new Money(value, currency), description, date)
+    const newTransaction = new Transaction(
+      type,
+      new Money(value, currency),
+      description,
+      date,
+      this.referenceDate,
+    )
     return await this.transactionRepository.save(newTransaction)
   }
 
@@ -60,6 +69,7 @@ export default class TransactionService {
       resolvedAmount,
       resolvedDescription,
       resolvedDate,
+      this.referenceDate,
       transaction.id,
     )
 

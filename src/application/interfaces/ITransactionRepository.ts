@@ -1,4 +1,4 @@
-import type { Transaction } from "../../domain/entities/Transaction.ts"
+import type Transaction from "../../domain/entities/Transaction.ts"
 
 /**
  * Repository / persistence port for transactions.

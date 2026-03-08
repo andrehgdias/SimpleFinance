@@ -19,7 +19,7 @@ describe("TransactionRepository", () => {
     it("Should map a Transaction instance to a PersistedTransaction", () => {
       // Arrange
       const transaction = buildTransaction()
-      const expectedPojo = {
+      const expectedPojo: PersistedTransaction = {
         id: transaction.id,
         date: transaction.date.getTime(),
         type: transaction.type,
@@ -38,7 +38,7 @@ describe("TransactionRepository", () => {
 
     it("Should map a POJO PersistedTransaction to a Transaction instance", () => {
       // Arrange
-      const transactionPojo = {
+      const transactionPojo: PersistedTransaction = {
         id: "my-transaction",
         date: new Date("2001-12-19").getTime(),
         type: TransactionType.INCOME,

@@ -1,4 +1,4 @@
-import type TransactionService from "../../application/services/TransactionService.ts"
+import TransactionService, { type CreateTransactionDto } from "../../application/services/TransactionService.ts"
 import { createStore, type SetStoreFunction } from "solid-js/store"
 import { TransactionType } from "../../domain/entities/Transaction.ts"
 import { Currency } from "../../domain/value-objects/Money.ts"
@@ -39,14 +39,10 @@ export class TransactionFormViewModel {
 
   readonly isValid: Accessor<boolean>
 
-  private readonly referenceDate: Date
-
   constructor(
     private readonly transactionCreator: TransactionCreator,
-    referenceDateISO: string,
+    private readonly referenceDate: Date = new Date(),
   ) {
-    this.referenceDate = new Date(referenceDateISO)
-
     const [state, setState] = createStore<TransactionFormState>({
       draft: {
         type: TransactionType.INCOME,
@@ -84,7 +80,7 @@ export class TransactionFormViewModel {
   }
 
   setDescription(value: string) {
-    this.setState("draft", "description", value)
+    this.setState("draft", "description", value.trim())
     this.setState("errors", "fields", "description", this.assertValidDescription())
   }
 
@@ -131,5 +127,48 @@ export class TransactionFormViewModel {
     if (num <= 0) return "Amount must be greater than 0"
 
     return null
+  }
+
+  async submit() {
+    if (!this.isValid()) {
+      // Expose field errors if any
+      this.validateAllFields()
+
+      return false
+    }
+
+    const transactionDto: CreateTransactionDto = {
+      description: this.state.draft.description,
+      value: parseFloat(this.state.draft.amount),
+      currency: this.state.draft.currency,
+      date: new Date(this.state.draft.date),
+      type: this.state.draft.type,
+    }
+
+    this.setSubmitting(true)
+    let result = false
+    try {
+      await this.transactionCreator.createTransaction(transactionDto)
+
+      this.setAmount("")
+      this.setDescription("")
+      this.setDate("")
+
+      result = true
+    } catch (e) {
+      this.setState("errors", "formError", "Unexpected error")
+      this.setState("errors", "lastSubmitErrorMessage", e instanceof Error ? e.message : String(e))
+      console.error(e)
+    } finally {
+      this.setSubmitting(false)
+    }
+
+    return Boolean(result)
+  }
+
+  private validateAllFields() {
+    this.setState("errors", "fields", "description", this.assertValidDescription())
+    this.setState("errors", "fields", "amount", this.assertValidAmount())
+    this.setState("errors", "fields", "date", this.assertValidDate())
   }
 }
