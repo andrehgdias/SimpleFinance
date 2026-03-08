@@ -7,13 +7,14 @@ export enum TransactionType {
 
 export default class Transaction {
   public readonly id: string
-  private _date: Date
+  private readonly _date: Date
 
   constructor(
-    public type: TransactionType,
-    public amount: Money,
-    public description: string,
+    public readonly type: TransactionType,
+    public readonly amount: Money,
+    public readonly description: string,
     date: Date,
+    referenceDate: Date = new Date(),
     id?: string,
   ) {
     this.id = id ?? crypto.randomUUID()
@@ -22,27 +23,26 @@ export default class Transaction {
       throw new Error("Description is required")
     }
 
-    this._date = this.assertDate(date)
+    const maxDate = new Date(
+      referenceDate.getFullYear(),
+      referenceDate.getMonth(),
+      referenceDate.getDate(),
+    )
+    this._date = this.assertDate(date, maxDate)
   }
 
   get date(): Date {
     return this._date
   }
 
-  set date(value: Date) {
-    this._date = this.assertDate(value)
-  }
-
-  private assertDate(date: Date) {
+  private assertDate(date: Date, maxDate: Date) {
     if (isNaN(date.getTime())) {
       throw new Error("Invalid date")
     }
 
     // Validate date is not in the future
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const transactionDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    if (transactionDate.getTime() > today.getTime()) {
+    if (transactionDate.getTime() > maxDate.getTime()) {
       throw new Error("Transaction date cannot be in the future")
     }
 

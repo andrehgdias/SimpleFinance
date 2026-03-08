@@ -8,10 +8,9 @@ import Transaction, { TransactionType } from "../../../../src/domain/entities/Tr
 import { Currency } from "../../../../src/domain/value-objects/Money.ts"
 import { createRoot } from "solid-js"
 import type { CreateTransactionDto } from "../../../../src/application/services/TransactionService.ts"
-import { buildTransaction } from "../../../testUtils.ts"
+import { buildTransaction, TEST_REFERENCE_DATE } from "../../../testUtils.ts"
 
 describe("TransactionFormViewModel", async () => {
-  const REFERENCE_DATE_ISO = "2026-12-19"
   let mockTransactionCreator: TransactionCreator
   let model: TransactionFormViewModel
 
@@ -20,7 +19,7 @@ describe("TransactionFormViewModel", async () => {
   beforeEach(() => {
     mockTransactionCreator = { createTransaction: vi.fn() }
     reactivityRoot = createRoot(d => {
-      model = new TransactionFormViewModel(mockTransactionCreator, REFERENCE_DATE_ISO)
+      model = new TransactionFormViewModel(mockTransactionCreator, TEST_REFERENCE_DATE)
       return d
     })
   })
@@ -147,6 +146,16 @@ describe("TransactionFormViewModel", async () => {
 
       expect(model.isValid()).toBe(false) // We did not set date but it is required
     })
+    it.todo("Should be false when there is a form error", () => {
+      // TODO needs a testable FormViewModel
+      // model.setAmount("10")
+      // model.setDescription("Saturday coffee")
+      // model.setDate("2026-12-13")
+      //
+      // model.setFormError // "Visible for test method"
+      //
+      // expect(model.isValid()).toBe(true)
+    })
     it("Should be true when all fields are valid", () => {
       model.setAmount("-100")
 
@@ -160,12 +169,79 @@ describe("TransactionFormViewModel", async () => {
 
   describe("Submit", () => {
     describe("Valid form", () => {
-      it("Should call service with mapped DTO, toggle submitting, reset on success, and return as true", () => {})
+      it("Should call service with mapped DTO, toggle submitting, reset on success, and return as true", async () => {
+        model.setAmount("42")
+        model.setDescription("Saturday coffee")
+        model.setDate("2026-12-03")
+
+        const dto: CreateTransactionDto = {
+          value: parseFloat(model.state.draft.amount),
+          currency: model.state.draft.currency,
+          description: model.state.draft.description,
+          date: new Date(model.state.draft.date),
+          type: model.state.draft.type,
+        }
+        const transaction = buildTransaction(dto)
+
+        let controlledResolve: (value: Transaction) => void
+        const deferredCreationPromise = new Promise<Transaction>(
+          resolve => (controlledResolve = resolve),
+        )
+        vi.mocked(mockTransactionCreator).createTransaction.mockReturnValue(deferredCreationPromise) // Just return the promise, do not resolve it since we want to control and simulate a delayed resolution
+
+        const submitPromise = model.submit() // Submit did not resolve yet,aka form hasn't complete its own submission
+        expect(model.isSubmitting()).toBe(true)
+
+        controlledResolve!(transaction) // ! needed to tell TS we have this value assigned
+
+        const result = await submitPromise
+        expect(result).toBe(true)
+        expect(model.isSubmitting()).toBe(false)
+        expect(mockTransactionCreator.createTransaction).toHaveBeenCalledTimes(1)
+        expect(mockTransactionCreator.createTransaction).toHaveBeenCalledWith(dto)
+
+        // Resets the draft
+        expect(model.state.draft.amount).toBe("")
+        expect(model.state.draft.description).toBe("")
+        expect(model.state.draft.date).toBe("")
+      })
     })
 
     describe("With errors", () => {
-      it.todo("Should not call service when invalid and should expose field errors", () => {})
-      it.todo("Should map application/domain error into form error when service throws", () => {})
+      it("Should not call service when invalid and should expose field errors", async () => {
+        model.setAmount("42")
+        model.setDate("2026-12-03")
+        // Missing description
+
+        const result = await model.submit()
+
+        expect(model.isSubmitting()).toBe(false)
+        expect(result).toBe(false)
+        expect(mockTransactionCreator.createTransaction).toHaveBeenCalledTimes(0)
+
+        expect(model.isValid()).toBe(false)
+        expect(model.state.errors.fields.description).toBe("Description is required")
+      })
+
+      it("Should map application/domain error into form error when service throws", async () => {
+        model.setAmount("42")
+        model.setDescription("Saturday coffee")
+        model.setDate("2026-12-03")
+
+        // Mock model error
+        vi.mocked(mockTransactionCreator).createTransaction.mockRejectedValue(
+          new Error("Model/Infrastructure error"),
+        )
+
+        const result = await model.submit()
+
+        expect(result).toBe(false)
+        expect(mockTransactionCreator.createTransaction).toHaveBeenCalledTimes(1)
+        expect(model.isSubmitting()).toBe(false)
+        expect(model.isValid()).toBe(false)
+        expect(model.state.errors.formError).toBe("Unexpected error")
+        expect(model.state.errors.lastSubmitErrorMessage).toBe("Model/Infrastructure error")
+      })
     })
   })
 })

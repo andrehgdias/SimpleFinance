@@ -4,7 +4,7 @@ import TransactionService, {
   type UpdateTransactionDto,
 } from "../../../../src/application/services/TransactionService"
 import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository.ts"
-import { buildTransaction } from "../../../testUtils"
+import { buildTransaction, TEST_REFERENCE_DATE } from "../../../testUtils"
 import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import Money, { Currency } from "../../../../src/domain/value-objects/Money.ts"
 import NotFoundError from "../../../../src/application/errors/NotFoundError.ts"
@@ -20,7 +20,7 @@ describe("Transaction Service", () => {
       findById: vi.fn(),
       delete: vi.fn(),
     }
-    transactionService = new TransactionService(mockTransactionRepository)
+    transactionService = new TransactionService(mockTransactionRepository, TEST_REFERENCE_DATE)
   })
 
   describe("Create", function () {

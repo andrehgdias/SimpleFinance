@@ -48,7 +48,7 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
       const allData = await transactionRepository.findAll()
 
       // Assert
-      expect(allData).toEqual(data)
+      expect(allData).toStrictEqual(data)
     })
   })
 
