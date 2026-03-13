@@ -21,13 +21,13 @@ export default class Money {
    * Format amount with 2 decimals and add commas
    */
   format(): string {
-    const formattedAmount = this.value.toLocaleString("en-US", {
+    const formattedAmount = this.value.toLocaleString("de-DE", {
       // TODO Support other locales
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
 
     // Add currency symbol (only USD for now)
-    return `$${formattedAmount}`
+    return `€${formattedAmount}`
   }
 }
