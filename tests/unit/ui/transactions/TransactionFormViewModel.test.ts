@@ -56,6 +56,12 @@ describe("TransactionFormViewModel", async () => {
     expect(model.isValid()).toBe(initialState.isValid)
   })
 
+  it("Set transaction type", function () {
+    model.setType(TransactionType.OUTCOME)
+
+    expect(model.state.draft.type).toBe(TransactionType.OUTCOME)
+  })
+
   describe("Validate as you type", () => {
     describe("Amount", () => {
       it("Should set amount error when amount is empty", () => {
@@ -183,6 +189,7 @@ describe("TransactionFormViewModel", async () => {
         model.setAmount("42")
         model.setDescription("Saturday coffee")
         model.setDate("2026-12-03")
+        model.setType(TransactionType.OUTCOME)
 
         const dto: CreateTransactionDto = {
           value: parseFloat(model.state.draft.amount),

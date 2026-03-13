@@ -1,5 +1,24 @@
 .transaction-form {
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap: .2rem;
+}
+
+.transaction-form > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.field-error, .form-error {
+    display: block;
+    min-height: 1rem;
+    line-height: 1rem;
+    font-size: 0.75rem;
+    color: #e74c3c;
+    margin-top: .2rem;
+}
+
+.form-error {
+    margin-top: 0;
+    margin-bottom: .2rem;
 }

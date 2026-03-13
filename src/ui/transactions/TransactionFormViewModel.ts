@@ -93,6 +93,10 @@ export class TransactionFormViewModel {
     this.setState("errors", "fields", "amount", this.assertValidAmount())
   }
 
+  setType(value: TransactionType) {
+    this.setState("draft", "type", value)
+  }
+
   private hasErrorMessage(error: string | null) {
     return error !== null && error.trim() !== ""
   }
@@ -151,8 +155,8 @@ export class TransactionFormViewModel {
 
       this.setAmount("")
       this.setDescription("")
-      this.setDate("")
       this.setDate(this.referenceDate.toISOString().substring(0, 10))
+      this.setType(TransactionType.INCOME)
 
       this.setState("errors", {
         formError: null,
