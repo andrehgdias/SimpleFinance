@@ -29,6 +29,6 @@ describe("Money Value Object", () => {
     const formatted = money.format()
 
     // Assert
-    expect(formatted).toBe("$1,234.56")
+    expect(formatted).toBe("€1.234,56")
   })
 })
