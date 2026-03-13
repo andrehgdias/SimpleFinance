@@ -313,4 +313,77 @@ describe("Transaction Service", () => {
       expect(mockTransactionRepository.delete).not.toHaveBeenCalled()
     })
   })
+
+  describe("Feature Balance", function () {
+    it("Should load all transactions and calculate the correct balance", async () => {
+      const salaryTransaction = buildTransaction({
+        amount: new Money(2000, Currency.EUR),
+      })
+      const bonusTransaction = buildTransaction({
+        amount: new Money(500, Currency.EUR),
+      })
+      const holidaysTransaction = buildTransaction({
+        type: TransactionType.OUTCOME,
+        amount: new Money(1500, Currency.EUR),
+      })
+
+      vi.mocked(mockTransactionRepository).findAll.mockResolvedValue([
+        salaryTransaction,
+        bonusTransaction,
+        holidaysTransaction,
+      ])
+
+      const balance = await transactionService.getBalance()
+
+      expect(balance).toBe(
+        salaryTransaction.amount.value +
+          bonusTransaction.amount.value -
+          holidaysTransaction.amount.value,
+      )
+    })
+
+    it("Should calculate the correct balance even when all transactions are OUTCOME", async () => {
+      const hotelsTransaction = buildTransaction({
+        type: TransactionType.OUTCOME,
+        amount: new Money(500, Currency.EUR),
+      })
+      const holidaysTransaction = buildTransaction({
+        type: TransactionType.OUTCOME,
+        amount: new Money(1500, Currency.EUR),
+      })
+
+      vi.mocked(mockTransactionRepository).findAll.mockResolvedValue([
+        hotelsTransaction,
+        holidaysTransaction,
+      ])
+
+      const balance = await transactionService.getBalance()
+
+      expect(balance).toBe(-hotelsTransaction.amount.value - holidaysTransaction.amount.value)
+    })
+
+    it("Should calculate the correct balance even when all transactions are INCOME", async () => {
+      const salaryTransaction = buildTransaction({
+        amount: new Money(2000, Currency.EUR),
+      })
+      const bonusTransaction = buildTransaction({
+        amount: new Money(500, Currency.EUR),
+      })
+
+      vi.mocked(mockTransactionRepository).findAll.mockResolvedValue([
+        salaryTransaction,
+        bonusTransaction,
+      ])
+
+      const balance = await transactionService.getBalance()
+
+      expect(balance).toBe(salaryTransaction.amount.value + bonusTransaction.amount.value)
+    })
+
+    it("Should return 0 when there are no transactions", async () => {
+      vi.mocked(mockTransactionRepository).findAll.mockResolvedValue([])
+      const balance = await transactionService.getBalance()
+      expect(balance).toBe(0)
+    })
+  })
 })

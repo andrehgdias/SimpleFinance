@@ -4,6 +4,7 @@ import TransactionService from "../application/services/TransactionService.ts"
 import TransactionRepository from "../infrastructure/repositories/TransactionRepository.ts"
 import SimpleIndexedDB, { type StoreConfig } from "../infrastructure/database/SimpleIndexedDB.ts"
 import TransactionList from "./transactions/TransactionList.tsx"
+import BalanceCard from "./balance/BalanceCard.tsx"
 
 const DB_NAME = "SimpleFinanceDB"
 const DB_VERSION = 1
@@ -24,6 +25,13 @@ const App: Component = () => {
 
   return (
     <div>
+      <section>
+        <h1>Simple. Finance</h1>
+        <h2>Transactions</h2>
+        <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
+          <BalanceCard transactionService={transactionService} refreshTrigger={refreshTrigger} />
+        </Show>
+      </section>
       <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
         <TransactionForm
           transactionService={transactionService}
