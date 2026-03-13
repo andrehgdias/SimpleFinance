@@ -36,7 +36,6 @@ export class TransactionFormViewModel {
   // Signals/memos for booleans
   readonly isSubmitting: Accessor<boolean>
   private readonly setSubmitting: Setter<boolean>
-
   readonly isValid: Accessor<boolean>
 
   constructor(
@@ -48,7 +47,7 @@ export class TransactionFormViewModel {
         type: TransactionType.INCOME,
         currency: Currency.EUR,
         description: "",
-        date: "",
+        date: referenceDate.toISOString().substring(0, 10),
         amount: "0",
       },
       errors: {
@@ -153,6 +152,13 @@ export class TransactionFormViewModel {
       this.setAmount("")
       this.setDescription("")
       this.setDate("")
+      this.setDate(this.referenceDate.toISOString().substring(0, 10))
+
+      this.setState("errors", {
+        formError: null,
+        lastSubmitErrorMessage: null,
+        fields: { description: null, amount: null, date: null },
+      })
 
       result = true
     } catch (e) {
