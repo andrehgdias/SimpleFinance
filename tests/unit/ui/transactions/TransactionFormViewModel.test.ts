@@ -33,7 +33,7 @@ describe("TransactionFormViewModel", async () => {
         type: TransactionType.INCOME,
         currency: Currency.EUR,
         description: "",
-        date: "",
+        date: TEST_REFERENCE_DATE.toISOString().substring(0, 10),
         amount: "0",
       },
       errors: {
@@ -139,12 +139,11 @@ describe("TransactionFormViewModel", async () => {
 
   describe("isValid", () => {
     it("Should be false when not all required fields are filled", () => {
-      model.setAmount("42")
       model.setDescription(
         "The answer to the Ultimate Question of Life, the Universe, and Everything",
       )
 
-      expect(model.isValid()).toBe(false) // We did not set date but it is required
+      expect(model.isValid()).toBe(false) // We did not set amount but it is required
     })
     it.todo("Should be false when there is a form error", () => {
       // TODO needs a testable FormViewModel
@@ -170,6 +169,17 @@ describe("TransactionFormViewModel", async () => {
   describe("Submit", () => {
     describe("Valid form", () => {
       it("Should call service with mapped DTO, toggle submitting, reset on success, and return as true", async () => {
+        // Arrange
+        const emptyErrors: TransactionFormState["errors"] = {
+          formError: null,
+          lastSubmitErrorMessage: null,
+          fields: {
+            description: null,
+            date: null,
+            amount: null,
+          },
+        }
+
         model.setAmount("42")
         model.setDescription("Saturday coffee")
         model.setDate("2026-12-03")
@@ -189,6 +199,7 @@ describe("TransactionFormViewModel", async () => {
         )
         vi.mocked(mockTransactionCreator).createTransaction.mockReturnValue(deferredCreationPromise) // Just return the promise, do not resolve it since we want to control and simulate a delayed resolution
 
+        // Act, Assert
         const submitPromise = model.submit() // Submit did not resolve yet,aka form hasn't complete its own submission
         expect(model.isSubmitting()).toBe(true)
 
@@ -203,7 +214,9 @@ describe("TransactionFormViewModel", async () => {
         // Resets the draft
         expect(model.state.draft.amount).toBe("")
         expect(model.state.draft.description).toBe("")
-        expect(model.state.draft.date).toBe("")
+        expect(model.state.draft.date).toBe(TEST_REFERENCE_DATE.toISOString().substring(0, 10))
+        expect(model.state.draft.type).toBe(TransactionType.INCOME)
+        expect(model.state.errors).toStrictEqual(emptyErrors)
       })
     })
 
