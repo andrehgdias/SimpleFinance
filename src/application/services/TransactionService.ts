@@ -1,4 +1,4 @@
-import Transaction, { type TransactionType } from "../../domain/entities/Transaction.ts"
+import Transaction, { TransactionType } from "../../domain/entities/Transaction.ts"
 import Money, { type Currency } from "../../domain/value-objects/Money.ts"
 import type { ITransactionRepository } from "../interfaces/ITransactionRepository.ts"
 import NotFoundError from "../errors/NotFoundError.ts"
@@ -82,5 +82,13 @@ export default class TransactionService {
       throw new NotFoundError(`Transaction with id ${id} not found`)
     }
     return await this.transactionRepository.delete(id)
+  }
+
+  async getBalance(): Promise<number> {
+    const persistedTransactions = await this.transactionRepository.findAll()
+    return persistedTransactions.reduce((balance, transaction) => {
+      const multiplier = transaction.type === TransactionType.INCOME ? 1 : -1
+      return balance + transaction.amount.value * multiplier
+    }, 0)
   }
 }
