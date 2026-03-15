@@ -76,7 +76,7 @@ export default class TransactionRepository
     return this.toDomain(result)
   }
 
-  delete(_id: string): Promise<void> {
-    throw new Error("Method not implemented.")
+  async delete(id: string): Promise<void> {
+    return await this.indexedDBInstance.delete(this.STORE_NAME, id)
   }
 }

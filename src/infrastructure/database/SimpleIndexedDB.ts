@@ -104,10 +104,10 @@ export default class SimpleIndexedDB {
     })
   }
 
-  get<T>(objectStoreName: string, id: string): Promise<T> {
+  get<T>(objectStoreName: string, id: IDBValidKey): Promise<T> {
     return new Promise((resolve, reject) => {
       const db = this.getDb()
-      const transaction = db.transaction(objectStoreName, "readwrite")
+      const transaction = db.transaction(objectStoreName)
       const objectStore = transaction.objectStore(objectStoreName)
       const getRequest = objectStore.get(id)
 
@@ -117,11 +117,25 @@ export default class SimpleIndexedDB {
       }
     })
   }
+
+  delete(objectStoreName: string, id: IDBValidKey): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const db = this.getDb()
+      const transaction = db.transaction([objectStoreName], "readwrite")
+      const objectStore = transaction.objectStore(objectStoreName)
+      const deleteRequest = objectStore.delete(id)
+
+      transaction.oncomplete = () => resolve(deleteRequest.result)
+      transaction.onerror = () => {
+        reject(new SimpleIndexedDBErrorWrapper("delete", transaction.error || deleteRequest.error))
+      }
+    })
+  }
 }
 
 export class SimpleIndexedDBErrorWrapper extends Error {
   constructor(
-    operation: "getDb" | "open" | "save" | "getAll" | "clearStore" | "get",
+    operation: "getDb" | "open" | "save" | "getAll" | "clearStore" | "get" | "delete",
     originalError: Error | null,
   ) {
     const message = originalError

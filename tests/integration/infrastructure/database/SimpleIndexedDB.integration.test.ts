@@ -82,6 +82,30 @@ describe("SimpleIndexedDB - Integration Tests", () => {
     // Assert
     expect(allData).toStrictEqual([...data, newData])
   })
+
+  it("Should delete provided entity from storage and keep the rest untouched", async function () {
+    const originalData = [createTestData(), createTestData()]
+    await indexedDbInstance.save(STORE_TEST_NAME, originalData)
+    const targetDataId = originalData[0].id
+
+    await expect(indexedDbInstance.delete(STORE_TEST_NAME, targetDataId)).resolves.toBeUndefined()
+
+    const remainingData = await indexedDbInstance.getAll<TestData>(STORE_TEST_NAME)
+    expect(remainingData.length).toBe(1)
+    expect(remainingData[0].id).toBe(originalData[1].id)
+  })
+
+  it("Not found data should return void", async function () {
+    const originalData = [createTestData(), createTestData()]
+    await indexedDbInstance.save(STORE_TEST_NAME, originalData)
+
+    await expect(
+      indexedDbInstance.delete(STORE_TEST_NAME, "unknownDataId"),
+    ).resolves.toBeUndefined()
+
+    const remainingData = await indexedDbInstance.getAll<TestData>(STORE_TEST_NAME)
+    expect(remainingData.length).toBe(2)
+  })
 })
 
 type TestData = {

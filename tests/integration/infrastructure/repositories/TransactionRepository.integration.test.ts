@@ -108,10 +108,20 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
       const transactionId = transaction.id
 
       // Act
-      const result = await transactionRepository.delete(transactionId)
+      const deletionResult = await transactionRepository.delete(transactionId)
+      const findByIdResult = await transactionRepository.findById(transactionId)
 
       // Assert
-      expect(result).toBeUndefined()
+      expect(deletionResult).toBeUndefined()
+      expect(findByIdResult).toBeNull()
+    })
+
+    it("Deleting not found transaction should return void", async () => {
+      // Arrange
+      const transactionId = "unknown-transaction"
+
+      // Act, Assert
+      await expect(transactionRepository.delete(transactionId)).resolves.toBeUndefined()
     })
   })
 })
