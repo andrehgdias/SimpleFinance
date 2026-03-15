@@ -113,5 +113,19 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
       // Assert
       expect(result).toBeUndefined()
     })
+
+    it("Not found transaction should return null", async () => {
+      // Arrange
+      const transaction = buildTransaction()
+      await transactionRepository.save(transaction)
+      const transactionId = transaction.id
+
+      // Act
+      await transactionRepository.delete(transactionId)
+      const result = await transactionRepository.findById(transactionId)
+
+      // Assert
+      expect(result).toBe(null)
+    })
   })
 })
