@@ -1,0 +1,56 @@
+name: Deploy Simple. Finance
+
+on:
+  push:
+    branches:
+      - main
+      
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  node-version: 20.x
+  pnpm-version: 10.x
+
+jobs:
+  deploy_application:
+    name: Deploy Simple.Finance from main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.4.0
+        with:
+          # Version of pnpm to install
+          version: ${{ env.pnpm-version }}
+          # If specified, run `pnpm install`
+          run_install: true
+          # Whether to cache the pnpm store directory
+          cache: true
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6.3.0
+        with:
+          # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
+          node-version: ${{ env.node-version }}
+          # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
+          cache: pnpm
+      - name: Build project
+        run: pnpm build
+      - run: ls -la ./dist
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4.0.0
+        with:
+          # Artifact name
+          name: Simple. Finance Prod
+          # Path of the directory containing the static assets.
+          path: dist
+      - name: Deploy GitHub Pages site
+        uses: actions/deploy-pages@v4.0.5
+        with:
+          # Time in milliseconds after which to timeout and cancel the deployment (default: 10 minutes)
+          timeout: 180000
+          # Name of the artifact to deploy
+          artifact_name: Simple. Finance Prod
