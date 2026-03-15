@@ -76,7 +76,7 @@ export default class TransactionRepository
     return this.toDomain(result)
   }
 
-  delete(id: string): Promise<void> {
+  delete(_id: string): Promise<void> {
     throw new Error("Method not implemented.")
   }
 }
