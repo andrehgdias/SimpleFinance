@@ -23,6 +23,8 @@ const App: Component = () => {
     setIsDbOpen(indexedDb.isOpen)
   })
 
+  const handleRefresh = () => setRefreshTrigger(prev => prev + 1)
+
   return (
     <div>
       <section>
@@ -35,10 +37,14 @@ const App: Component = () => {
       <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
         <TransactionForm
           transactionService={transactionService}
-          onCreateTransaction={() => setRefreshTrigger(prev => prev + 1)}
+          onCreateTransaction={handleRefresh}
         />
         <hr />
-        <TransactionList transactionService={transactionService} refreshTrigger={refreshTrigger} />
+        <TransactionList
+          transactionService={transactionService}
+          refreshTrigger={refreshTrigger}
+          onDeleteTransaction={handleRefresh}
+        />
       </Show>
     </div>
   )

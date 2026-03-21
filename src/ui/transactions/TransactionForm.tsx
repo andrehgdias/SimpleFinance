@@ -108,8 +108,6 @@ const TransactionForm: Component<TransactionFormProps> = props => {
 
       <div>
         <span class={styles["form-error"]}>{viewModel.state.errors.formError}</span>
-        {/*TODO Remove error report below*/}
-        <span class={styles["form-error"]}>{viewModel.state.errors.lastSubmitErrorMessage}</span>
         <button
           type="submit"
           onClick={handleSubmit}
