@@ -1,6 +1,7 @@
 import { type Accessor, type Component, createResource, ErrorBoundary, For, Show } from "solid-js"
 import type TransactionService from "../../application/services/TransactionService.ts"
 import NotFoundError from "../../application/errors/NotFoundError.ts"
+import { TransactionType } from "../../domain/entities/Transaction.ts"
 
 export type TransactionListProps = {
   transactionService: TransactionService
@@ -36,7 +37,7 @@ const TransactionList: Component<TransactionListProps> = props => {
           <For each={transactions.latest ?? []}>
             {transaction => (
               <li>
-                {`${transaction.description} - ${transaction.type} ${transaction.amount.format()} at ${transaction.date.toLocaleString()}`}
+                {`${transaction.description} - ${transaction.type === TransactionType.INCOME ? "Income" : "Outcome"} ${transaction.amount.format()} at ${transaction.date.toLocaleDateString()}`}
                 <button onClick={e => handleDelete(e, transaction.id)}>X</button>
               </li>
             )}
