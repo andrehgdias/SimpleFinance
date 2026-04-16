@@ -4,7 +4,7 @@ import Money, { Currency } from "../src/domain/value-objects/Money"
 export const TEST_REFERENCE_DATE = new Date("2026-12-19")
 
 export function buildTransaction(
-  overrides: Partial<Pick<Transaction, "type" | "amount" | "description" | "date">> = {},
+  overrides: Partial<Pick<Transaction, "type" | "amount" | "description"> & { date: Date }> = {},
   referenceDate: Date = TEST_REFERENCE_DATE,
 ): Transaction {
   const parameters: Omit<Transaction, "id"> = {

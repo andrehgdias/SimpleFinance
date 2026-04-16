@@ -3,7 +3,10 @@ import TransactionService, {
   type CreateTransactionDto,
   type UpdateTransactionDto,
 } from "../../../../src/application/services/TransactionService"
-import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository.ts"
+import {
+  type ITransactionRepository,
+  SortingOrder,
+} from "../../../../src/application/interfaces/ITransactionRepository.ts"
 import { buildTransaction, TEST_REFERENCE_DATE } from "../../../testUtils"
 import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
 import Money, { Currency } from "../../../../src/domain/value-objects/Money.ts"
@@ -64,6 +67,52 @@ describe("Transaction Service", () => {
       // Assert
       expect(transactions).toBe(allTransactions)
       expect(mockTransactionRepository.findAll).toHaveBeenCalledTimes(1)
+      expect(mockTransactionRepository.findAll).toHaveBeenCalledWith(undefined)
+    })
+
+    describe("Order by date", function () {
+      it("Should find all transactions in descending order", async () => {
+        //Arrange
+        const allTransactions = [
+          buildTransaction({ date: new Date("2026-03-02") }),
+          buildTransaction({ date: new Date("2026-03-01") }),
+        ]
+        vi.mocked(mockTransactionRepository).findAll.mockResolvedValue(allTransactions)
+
+        // Act
+        const transactions: Array<Transaction> = await transactionService.getAllTransactions({
+          direction: SortingOrder.DESC,
+        })
+
+        // Assert
+        expect(transactions).toStrictEqual(allTransactions)
+        expect(mockTransactionRepository.findAll).toHaveBeenCalledTimes(1)
+        expect(mockTransactionRepository.findAll).toHaveBeenCalledWith({
+          direction: SortingOrder.DESC,
+        })
+      })
+
+      it("Should find all transactions in ascending order", async () => {
+        //Arrange
+        const allTransactions = [
+          buildTransaction({ date: new Date("2026-03-01") }),
+          buildTransaction({ date: new Date("2026-03-02") }),
+        ]
+
+        vi.mocked(mockTransactionRepository).findAll.mockResolvedValue(allTransactions)
+
+        // Act
+        const transactions: Array<Transaction> = await transactionService.getAllTransactions({
+          direction: SortingOrder.ASC,
+        })
+
+        // Assert
+        expect(transactions).toStrictEqual(allTransactions)
+        expect(mockTransactionRepository.findAll).toHaveBeenCalledTimes(1)
+        expect(mockTransactionRepository.findAll).toHaveBeenCalledWith({
+          direction: SortingOrder.ASC,
+        })
+      })
     })
 
     it("Should find transaction by id", async () => {

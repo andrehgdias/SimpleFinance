@@ -2,6 +2,7 @@ import { type Accessor, type Component, createResource, ErrorBoundary, For, Show
 import type TransactionService from "../../application/services/TransactionService.ts"
 import NotFoundError from "../../application/errors/NotFoundError.ts"
 import { TransactionType } from "../../domain/entities/Transaction.ts"
+import { SortingOrder } from "../../application/interfaces/ITransactionRepository.ts"
 
 export type TransactionListProps = {
   transactionService: TransactionService
@@ -11,7 +12,7 @@ export type TransactionListProps = {
 
 const TransactionList: Component<TransactionListProps> = props => {
   const [transactions] = createResource(props.refreshTrigger, () =>
-    props.transactionService.getAllTransactions(),
+    props.transactionService.getAllTransactions({ direction: SortingOrder.DESC }),
   )
 
   const handleDelete = async (e: MouseEvent, id: string) => {

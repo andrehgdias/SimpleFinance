@@ -1,6 +1,6 @@
 import Transaction, { TransactionType } from "../../domain/entities/Transaction.ts"
 import Money, { type Currency } from "../../domain/value-objects/Money.ts"
-import type { ITransactionRepository } from "../interfaces/ITransactionRepository.ts"
+import type { ITransactionRepository, QueryOptions } from "../interfaces/ITransactionRepository.ts"
 import NotFoundError from "../errors/NotFoundError.ts"
 
 export type CreateTransactionDto = {
@@ -35,8 +35,8 @@ export default class TransactionService {
     return await this.transactionRepository.save(newTransaction)
   }
 
-  async getAllTransactions(): Promise<Array<Transaction>> {
-    return await this.transactionRepository.findAll()
+  async getAllTransactions(options?: QueryOptions): Promise<Array<Transaction>> {
+    return await this.transactionRepository.findAll(options)
   }
 
   async getTransactionById(id: string): Promise<Transaction> {

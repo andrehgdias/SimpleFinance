@@ -10,3 +10,11 @@ export interface ITransactionRepository {
   findById(id: string): Promise<Transaction | null>
   delete(id: string): Promise<void>
 }
+
+/**
+ * Following {@link IDBCursorDirection}
+ */
+export enum SortingOrder {
+  ASC = "next",
+  DESC = "prev",
+}
