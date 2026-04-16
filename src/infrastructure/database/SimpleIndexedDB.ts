@@ -169,9 +169,11 @@ export default class SimpleIndexedDB {
           // cursor.value contains the current record being iterated through
           result.push((cursor as IDBCursorWithValue).value)
           cursor.continue()
-        } else {
-          resolve(result)
         }
+      }
+
+      transaction.oncomplete = () => {
+        resolve(result)
       }
       transaction.onerror = () => {
         reject(

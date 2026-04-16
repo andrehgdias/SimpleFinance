@@ -1,4 +1,7 @@
-import type { ITransactionRepository } from "../../application/interfaces/ITransactionRepository.ts"
+import type {
+  ITransactionRepository,
+  QueryOptions,
+} from "../../application/interfaces/ITransactionRepository.ts"
 import Transaction from "../../domain/entities/Transaction.ts"
 import type SimpleIndexedDB from "../database/SimpleIndexedDB.ts"
 import Money from "../../domain/value-objects/Money.ts"
@@ -53,8 +56,19 @@ export default class TransactionRepository
     return this.toDomain(persistedData)
   }
 
-  async findAll(): Promise<Array<Transaction>> {
-    const result: Array<PersistedTransaction> = await this.indexedDBInstance.getAll(this.STORE_NAME)
+  async findAll(options?: QueryOptions): Promise<Array<Transaction>> {
+    let result: Array<PersistedTransaction> = []
+
+    if (options) {
+      result = await this.indexedDBInstance.getAllFromIndex(
+        this.STORE_NAME,
+        "date",
+        options.direction,
+      )
+    } else {
+      result = await this.indexedDBInstance.getAll(this.STORE_NAME)
+    }
+
     const transactions: Array<Transaction> = []
 
     for (const persistedTransaction of result) {

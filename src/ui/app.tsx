@@ -7,8 +7,8 @@ import TransactionList from "./transactions/TransactionList.tsx"
 import BalanceCard from "./balance/BalanceCard.tsx"
 
 const DB_NAME = "SimpleFinanceDB"
-const DB_VERSION = 1
-const DB_STORES: Array<StoreConfig> = [{ name: "transactions", keyPath: "id" }]
+const DB_VERSION = 2
+const DB_STORES: Array<StoreConfig> = [{ name: "transactions", keyPath: "id", indexes: ["date"] }]
 
 const App: Component = () => {
   const indexedDb = new SimpleIndexedDB(DB_NAME, DB_VERSION, DB_STORES)

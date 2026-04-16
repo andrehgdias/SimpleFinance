@@ -6,9 +6,13 @@ import type Transaction from "../../domain/entities/Transaction.ts"
  */
 export interface ITransactionRepository {
   save(transaction: Transaction): Promise<Transaction>
-  findAll(): Promise<Array<Transaction>>
+  findAll(options?: QueryOptions): Promise<Array<Transaction>>
   findById(id: string): Promise<Transaction | null>
   delete(id: string): Promise<void>
+}
+
+export type QueryOptions = {
+  direction: SortingOrder
 }
 
 /**

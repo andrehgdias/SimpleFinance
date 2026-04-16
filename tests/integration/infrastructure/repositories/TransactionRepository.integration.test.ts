@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import type { ITransactionRepository } from "../../../../src/application/interfaces/ITransactionRepository.ts"
+import {
+  type ITransactionRepository,
+  SortingOrder
+} from "../../../../src/application/interfaces/ITransactionRepository.ts"
 import Transaction from "../../../../src/domain/entities/Transaction"
 import { buildTransaction } from "../../../testUtils"
 import SimpleIndexedDB from "../../../../src/infrastructure/database/SimpleIndexedDB"
@@ -13,7 +16,7 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
   const TEST_OBJECT_STORE = "transactions"
 
   const indexedDBInstance = new SimpleIndexedDB(TEST_DB_NAME, TEST_DB_VERSION, [
-    { name: TEST_OBJECT_STORE, keyPath: "id" },
+    { name: TEST_OBJECT_STORE, keyPath: "id", indexes: ["date"] },
   ])
   let transactionRepository: ITransactionRepository
 
@@ -55,30 +58,68 @@ describe("TransactionRepository - Integration with IndexedDB", () => {
   })
 
   describe("Read", function () {
-    let transactions: Array<Transaction> = []
+    let unorderedTransactions: Array<Transaction> = []
 
     beforeEach(async () => {
-      transactions = [buildTransaction(), buildTransaction()]
+      unorderedTransactions = [
+        buildTransaction({ date: new Date("2026-03-01") }),
+        buildTransaction({ date: new Date("2026-03-03") }),
+        buildTransaction({ date: new Date("2026-03-05") }),
+        buildTransaction({ date: new Date("2026-03-04") }),
+        buildTransaction({ date: new Date("2026-03-02") }),
+      ]
 
       await Promise.all(
-        transactions.map(async transaction => transactionRepository.save(transaction)),
+        unorderedTransactions.map(async transaction => transactionRepository.save(transaction)),
       )
     })
 
-    it("Should read all transactions", async () => {
+    it("Should read all transactions with no specific order", async () => {
       // Arrange - noOp
       // Act
       const result: Array<Transaction> = await transactionRepository.findAll()
 
       // Assert
       for (const resultElement of result) {
-        expect(transactions).toContainEqual(resultElement)
+        expect(unorderedTransactions).toContainEqual(resultElement)
       }
+    })
+
+    describe("Order by date", function () {
+      it("Should read all transactions in ascending order", async () => {
+        // Arrange
+        const ascendingTransactions = unorderedTransactions.sort(
+          (a, b) => a.date.getTime() - b.date.getTime(),
+        )
+
+        // Act
+        const result: Array<Transaction> = await transactionRepository.findAll({
+          direction: SortingOrder.ASC,
+        })
+
+        // Assert
+        expect(result).toStrictEqual(ascendingTransactions)
+      })
+
+      it("Should read all transactions in descending order", async () => {
+        // Arrange
+        const descendingTransactions = unorderedTransactions.sort(
+          (a, b) => b.date.getTime() - a.date.getTime(),
+        )
+
+        // Act
+        const result: Array<Transaction> = await transactionRepository.findAll({
+          direction: SortingOrder.DESC,
+        })
+
+        // Assert
+        expect(result).toStrictEqual(descendingTransactions)
+      })
     })
 
     it("Should read a transaction", async () => {
       // Arrange
-      const transaction = transactions[0]
+      const transaction = unorderedTransactions[0]
       const transactionId = transaction.id
 
       // Act
