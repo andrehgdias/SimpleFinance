@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import SimpleIndexedDB, {
   SimpleIndexedDBErrorWrapper,
-  type StoreConfig,
+  type StoreConfig
 } from "../../../../src/infrastructure/database/SimpleIndexedDB.ts"
 
 import "fake-indexeddb/auto" // Allow testing indexedDb at a nodejs environment
@@ -16,7 +16,7 @@ describe("SimpleIndexedDB - Integration Tests", () => {
 
   beforeEach(async function () {
     indexedDbInstance = new SimpleIndexedDB(TEST_DB_NAME, TEST_DB_VERSION, [
-      { name: STORE_TEST_NAME, keyPath: "id" },
+      { name: STORE_TEST_NAME, keyPath: "id", indexes: ["text"] },
     ])
     await indexedDbInstance.open()
   })
@@ -69,6 +69,46 @@ describe("SimpleIndexedDB - Integration Tests", () => {
     expect(allData).toStrictEqual(data)
   })
 
+  it("Should retrieve all data from index, ordered ascending by default", async function () {
+    const data = [
+      createTestData("C Item"),
+      createTestData("B Item"),
+      createTestData("C Item"),
+      createTestData("A Item"),
+      createTestData("BB Item"),
+    ]
+    await indexedDbInstance.save(STORE_TEST_NAME, data)
+    const ascendingData = data.sort((a, b) => a.text.localeCompare(b.text))
+
+    const result = await indexedDbInstance.getAllFromIndex<TestData>(STORE_TEST_NAME, "text")
+
+    expect(result).toStrictEqual(ascendingData)
+  })
+
+  it("Should retrieve all data from index in descending order", async function () {
+    const data = [
+      createTestData("C Item"),
+      createTestData("B Item"),
+      createTestData("C Item"),
+      createTestData("A Item"),
+      createTestData("BB Item"),
+    ]
+    await indexedDbInstance.save(STORE_TEST_NAME, data)
+    const descendingData = data.sort((a, b) => b.text.localeCompare(a.text))
+    // We have to swap their positions because IndexedDB order both the index value and ids, so when we recover in descending order the ids are also ordered.
+    const aux = descendingData[0]
+    descendingData[0] = descendingData[1]
+    descendingData[1] = aux
+
+    const result = await indexedDbInstance.getAllFromIndex<TestData>(
+      STORE_TEST_NAME,
+      "text",
+      "prev",
+    )
+
+    expect(result).toStrictEqual(descendingData)
+  })
+
   it("Should save all data from different save operations without overwriting any data", async function () {
     // Arrange
     const data = [createTestData(), createTestData()]
@@ -112,10 +152,12 @@ type TestData = {
   id: number
   text: string
 }
-function testDataFactory(): () => TestData {
+function testDataFactory(): (title?: string) => TestData {
   let id = 1
 
-  return function () {
-    return { id: id++, text: "My test data" }
+  return function (title?: string): TestData {
+    let testDate: TestData = { id, text: title ?? `Title ${id} test data` }
+    id++
+    return testDate
   }
 }
