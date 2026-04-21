@@ -1,20 +1,15 @@
-import { type Accessor, type Component, createResource, ErrorBoundary, For, Show } from "solid-js"
+import { type Component, ErrorBoundary, For, type Resource, Show } from "solid-js"
 import type TransactionService from "../../application/services/TransactionService.ts"
 import NotFoundError from "../../application/errors/NotFoundError.ts"
-import { TransactionType } from "../../domain/entities/Transaction.ts"
-import { SortingOrder } from "../../application/interfaces/ITransactionRepository.ts"
+import Transaction, { TransactionType } from "../../domain/entities/Transaction.ts"
 
 export type TransactionListProps = {
   transactionService: TransactionService
-  refreshTrigger: Accessor<number>
   onDeleteTransaction: () => void
+  transactions: Resource<Array<Transaction>>
 }
 
 const TransactionList: Component<TransactionListProps> = props => {
-  const [transactions] = createResource(props.refreshTrigger, () =>
-    props.transactionService.getAllTransactions({ direction: SortingOrder.DESC }),
-  )
-
   const handleDelete = async (e: MouseEvent, id: string) => {
     e.preventDefault()
 
@@ -33,9 +28,9 @@ const TransactionList: Component<TransactionListProps> = props => {
 
   return (
     <ErrorBoundary fallback={<div>Error loading transactions</div>}>
-      <Show when={!transactions.loading} fallback={<div>Loading...</div>}>
+      <Show when={!props.transactions.loading} fallback={<div>Loading...</div>}>
         <ol>
-          <For each={transactions.latest ?? []}>
+          <For each={props.transactions.latest ?? []}>
             {transaction => (
               <li>
                 {`${transaction.description} - ${transaction.type === TransactionType.INCOME ? "Income" : "Outcome"} ${transaction.amount.format()} at ${transaction.date.toLocaleDateString()}`}

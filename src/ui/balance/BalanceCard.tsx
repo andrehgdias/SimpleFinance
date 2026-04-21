@@ -1,19 +1,14 @@
-import { type Accessor, type Component, createResource, ErrorBoundary, Show } from "solid-js"
-import TransactionService from "../../application/services/TransactionService.ts"
+import { type Component, ErrorBoundary, type Resource, Show } from "solid-js"
 
 export type BalanceCardProps = {
-  transactionService: TransactionService
-  refreshTrigger: Accessor<number>
+  balance: Resource<number>
 }
 
 const BalanceCard: Component<BalanceCardProps> = props => {
-  const [balance] = createResource(props.refreshTrigger, () =>
-    props.transactionService.getBalance(),
-  )
   return (
     <ErrorBoundary fallback={<div>Error</div>}>
-      <Show when={!balance.loading} fallback={<div>Loading...</div>}>
-        <div>€{balance.latest}</div>
+      <Show when={!props.balance.loading} fallback={<div>Loading...</div>}>
+        <div>€{props.balance.latest}</div>
         <span>Net balance</span>
       </Show>
     </ErrorBoundary>
