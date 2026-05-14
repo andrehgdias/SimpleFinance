@@ -84,11 +84,23 @@ export default class TransactionService {
     return await this.transactionRepository.delete(id)
   }
 
-  async getBalance(): Promise<number> {
+  async loadIncomeExpenseBreakdown(): Promise<{ income: number; expenses: number }> {
     const persistedTransactions = await this.transactionRepository.findAll()
-    return persistedTransactions.reduce((balance, transaction) => {
-      const multiplier = transaction.type === TransactionType.INCOME ? 1 : -1
-      return balance + transaction.amount.value * multiplier
-    }, 0)
+    const breakdown = {
+      income: 0,
+      expenses: 0,
+    }
+
+    for (const transaction of persistedTransactions) {
+      if (transaction.type === TransactionType.INCOME) {
+        breakdown.income += transaction.amount.value
+      }
+
+      if (transaction.type === TransactionType.OUTCOME) {
+        breakdown.expenses += transaction.amount.value
+      }
+    }
+
+    return breakdown
   }
 }

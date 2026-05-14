@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import TransactionService, {
   type CreateTransactionDto,
-  type UpdateTransactionDto,
+  type UpdateTransactionDto
 } from "../../../../src/application/services/TransactionService"
 import {
   type ITransactionRepository,
-  SortingOrder,
+  SortingOrder
 } from "../../../../src/application/interfaces/ITransactionRepository.ts"
 import { buildTransaction, TEST_REFERENCE_DATE } from "../../../testUtils"
 import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
@@ -364,7 +364,7 @@ describe("Transaction Service", () => {
   })
 
   describe("Feature Balance", function () {
-    it("Should load all transactions and calculate the correct balance", async () => {
+    it("Should load all transactions and accumulate each at its correct classification", async () => {
       const salaryTransaction = buildTransaction({
         amount: new Money(2000, Currency.EUR),
       })
@@ -382,16 +382,13 @@ describe("Transaction Service", () => {
         holidaysTransaction,
       ])
 
-      const balance = await transactionService.getBalance()
+      const { income, expenses } = await transactionService.loadIncomeExpenseBreakdown()
 
-      expect(balance).toBe(
-        salaryTransaction.amount.value +
-          bonusTransaction.amount.value -
-          holidaysTransaction.amount.value,
-      )
+      expect(income).toBe(salaryTransaction.amount.value + bonusTransaction.amount.value)
+      expect(expenses).toBe(holidaysTransaction.amount.value)
     })
 
-    it("Should calculate the correct balance even when all transactions are OUTCOME", async () => {
+    it("Should have a total income of zero when all transactions are OUTCOME", async () => {
       const hotelsTransaction = buildTransaction({
         type: TransactionType.OUTCOME,
         amount: new Money(500, Currency.EUR),
@@ -406,12 +403,13 @@ describe("Transaction Service", () => {
         holidaysTransaction,
       ])
 
-      const balance = await transactionService.getBalance()
+      const { income, expenses } = await transactionService.loadIncomeExpenseBreakdown()
 
-      expect(balance).toBe(-hotelsTransaction.amount.value - holidaysTransaction.amount.value)
+      expect(expenses).toBe(hotelsTransaction.amount.value + holidaysTransaction.amount.value)
+      expect(income).toBe(0)
     })
 
-    it("Should calculate the correct balance even when all transactions are INCOME", async () => {
+    it("Should have a total expense of zero when all transactions are INCOME", async () => {
       const salaryTransaction = buildTransaction({
         amount: new Money(2000, Currency.EUR),
       })
@@ -424,15 +422,17 @@ describe("Transaction Service", () => {
         bonusTransaction,
       ])
 
-      const balance = await transactionService.getBalance()
+      const { income, expenses } = await transactionService.loadIncomeExpenseBreakdown()
 
-      expect(balance).toBe(salaryTransaction.amount.value + bonusTransaction.amount.value)
+      expect(income).toBe(salaryTransaction.amount.value + bonusTransaction.amount.value)
+      expect(expenses).toBe(0)
     })
 
     it("Should return 0 when there are no transactions", async () => {
       vi.mocked(mockTransactionRepository).findAll.mockResolvedValue([])
-      const balance = await transactionService.getBalance()
-      expect(balance).toBe(0)
+      const { income, expenses } = await transactionService.loadIncomeExpenseBreakdown()
+      expect(income).toBe(0)
+      expect(expenses).toBe(0)
     })
   })
 })

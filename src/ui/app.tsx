@@ -1,4 +1,11 @@
-import { type Component, createResource, createSignal, onMount, Show } from "solid-js"
+import {
+  type Component,
+  createResource,
+  createSignal,
+  ErrorBoundary,
+  onMount,
+  Show,
+} from "solid-js"
 import TransactionForm from "./transactions/TransactionForm.tsx"
 import TransactionService from "../application/services/TransactionService.ts"
 import TransactionRepository from "../infrastructure/repositories/TransactionRepository.ts"
@@ -30,9 +37,16 @@ const App: Component = () => {
       await transactionService.getAllTransactions({ direction: sortingOrder }),
   )
 
-  const [balance] = createResource(
+  const [balanceBreakdown] = createResource(
     () => (isDbOpen() ? refreshTrigger() : null),
-    () => transactionService.getBalance(),
+    async () => {
+      const breakdown = await transactionService.loadIncomeExpenseBreakdown()
+      return {
+        income: breakdown.income,
+        expenses: breakdown.expenses,
+        netBalance: breakdown.income - breakdown.expenses,
+      }
+    },
   )
 
   onMount(async () => {
@@ -48,7 +62,15 @@ const App: Component = () => {
           <h2>Transactions</h2>
         </div>
         <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
-          <BalanceCard balance={balance} />
+          <ErrorBoundary fallback={<div>Error</div>}>
+            <Show when={!balanceBreakdown.loading} fallback={<div>Loading...</div>}>
+              <BalanceCard
+                income={balanceBreakdown.latest!.income}
+                expenses={balanceBreakdown.latest!.expenses}
+                netBalance={balanceBreakdown.latest!.netBalance}
+              />
+            </Show>
+          </ErrorBoundary>
         </Show>
       </header>
       <Show when={isDbOpen()} fallback={<div>Loading...</div>}>

@@ -1,30 +1,30 @@
-import { type Component, ErrorBoundary, type Resource, Show } from "solid-js"
+import { type Component } from "solid-js"
 import styles from "./style.module.css"
 
 export type BalanceCardProps = {
-  balance: Resource<number>
+  income: number
+  expenses: number
+  netBalance: number
 }
 
 const BalanceCard: Component<BalanceCardProps> = props => {
   return (
-    <ErrorBoundary fallback={<div>Error</div>}>
-      <Show when={!props.balance.loading} fallback={<div>Loading...</div>}>
-        <div class={`card ${styles["balance-card-group"]}`}>
-          <div class={styles["balance-card"]}>
-            <span>€{props.balance.latest}</span>
-            <small>Net balance</small>
-          </div>
-          <div class={styles["balance-card"]}>
-            <span>€{props.balance.latest}</span>
-            <small>Net balance</small>
-          </div>
-          <div class={styles["balance-card"]}>
-            <span>€{props.balance.latest}</span>
-            <small>Net balance</small>
-          </div>
-        </div>
-      </Show>
-    </ErrorBoundary>
+    <div class={`card ${styles["balance-card-group"]}`}>
+      <div class={`${styles["balance-card"]} ${styles.green}`}>
+        <span>€{props.income}</span>
+        <small>Income</small>
+      </div>
+      <div class={`${styles["balance-card"]} ${styles.red}`}>
+        <span>€{props.expenses}</span>
+        <small>Expenses</small>
+      </div>
+      <div class={`${styles["balance-card"]} ${props.netBalance >= 0 ? styles.green : styles.red}`}>
+        <span>
+          {props.netBalance >= 0 ? "+" : "-"}€{props.netBalance}
+        </span>
+        <small>Net balance</small>
+      </div>
+    </div>
   )
 }
 
