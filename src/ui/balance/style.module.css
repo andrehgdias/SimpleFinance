@@ -1,0 +1,19 @@
+.balance-card-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.balance-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+}
+
+.balance-card > small {
+    color: #7f7f7f;
+    font-size: .8rem;
+    line-height: 1rem;
+}

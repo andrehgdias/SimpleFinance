@@ -41,14 +41,16 @@ const App: Component = () => {
   })
 
   return (
-    <div>
-      <section>
-        <h1>Simple. Finance</h1>
-        <h2>Transactions</h2>
+    <main>
+      <header>
+        <div class="card">
+          <h1>Simple. Finance</h1>
+          <h2>Transactions</h2>
+        </div>
         <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
           <BalanceCard balance={balance} />
         </Show>
-      </section>
+      </header>
       <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
         <TransactionForm
           transactionService={transactionService}
@@ -79,7 +81,7 @@ const App: Component = () => {
           onDeleteTransaction={handleRefresh}
         />
       </Show>
-    </div>
+    </main>
   )
 }
 export default App
