@@ -20,7 +20,7 @@ const BalanceCard: Component<BalanceCardProps> = props => {
       </div>
       <div class={`${styles["balance-card"]} ${props.netBalance >= 0 ? styles.green : styles.red}`}>
         <span>
-          {props.netBalance >= 0 ? "+" : "-"}€{props.netBalance}
+          {props.netBalance >= 0 ? "+" : "-"}€{Math.abs(props.netBalance)}
         </span>
         <small>Net balance</small>
       </div>
