@@ -10,7 +10,7 @@ import TransactionForm from "./transactions/form/TransactionForm.tsx"
 import TransactionService from "../application/services/TransactionService.ts"
 import TransactionRepository from "../infrastructure/repositories/TransactionRepository.ts"
 import SimpleIndexedDB, { type StoreConfig } from "../infrastructure/database/SimpleIndexedDB.ts"
-import TransactionList from "./transactions/TransactionList.tsx"
+import TransactionList from "./transactions/list/TransactionList.tsx"
 import BalanceCard from "./balance/BalanceCard.tsx"
 import { SortingOrder } from "../application/interfaces/ITransactionRepository.ts"
 

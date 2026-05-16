@@ -1,8 +1,9 @@
 import { type Component, createMemo, For } from "solid-js"
-import type TransactionService from "../../application/services/TransactionService.ts"
-import NotFoundError from "../../application/errors/NotFoundError.ts"
-import Transaction, { TransactionType } from "../../domain/entities/Transaction.ts"
+import type TransactionService from "../../../application/services/TransactionService.ts"
+import NotFoundError from "../../../application/errors/NotFoundError.ts"
+import Transaction from "../../../domain/entities/Transaction.ts"
 import styles from "./style.module.css"
+import TransactionListItem from "./TransactionListItem.tsx"
 
 export type TransactionListProps = {
   transactionService: TransactionService
@@ -62,18 +63,9 @@ const TransactionList: Component<TransactionListProps> = props => {
             </header>
 
             <For each={Array.from(transactionsMap().get(date)!)}>
-              {transaction => {
-                let isExpense = transaction.type === TransactionType.OUTCOME
-                return (
-                  <li class={`card ${styles["transaction-list-item"]}`}>
-                    <h1>{transaction.description}</h1>
-                    <span
-                      class={isExpense ? "red" : "green"}
-                    >{`${isExpense ? "-" : ""}${transaction.amount.format()}`}</span>
-                    <button onClick={e => handleDelete(e, transaction.id)}>X</button>
-                  </li>
-                )
-              }}
+              {transaction => (
+                <TransactionListItem transaction={transaction} onDelete={handleDelete} />
+              )}
             </For>
           </div>
         )}
