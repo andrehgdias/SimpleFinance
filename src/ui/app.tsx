@@ -6,7 +6,7 @@ import {
   onMount,
   Show,
 } from "solid-js"
-import TransactionForm from "./transactions/TransactionForm.tsx"
+import TransactionForm from "./transactions/form/TransactionForm.tsx"
 import TransactionService from "../application/services/TransactionService.ts"
 import TransactionRepository from "../infrastructure/repositories/TransactionRepository.ts"
 import SimpleIndexedDB, { type StoreConfig } from "../infrastructure/database/SimpleIndexedDB.ts"
@@ -58,8 +58,8 @@ const App: Component = () => {
     <main>
       <header>
         <div class="card">
-          <h1>Simple. Finance</h1>
-          <h2>Transactions</h2>
+          <h1 class="app-name">Simple. Finance</h1>
+          <h2 class="module-name">Transactions</h2>
         </div>
         <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
           <ErrorBoundary fallback={<div>Error</div>}>
@@ -73,6 +73,7 @@ const App: Component = () => {
           </ErrorBoundary>
         </Show>
       </header>
+
       <Show when={isDbOpen()} fallback={<div>Loading...</div>}>
         <TransactionForm
           transactionService={transactionService}
@@ -96,12 +97,18 @@ const App: Component = () => {
             </select>
           </div>
         </section>
+
         <hr />
-        <TransactionList
-          transactions={transactions}
-          transactionService={transactionService}
-          onDeleteTransaction={handleRefresh}
-        />
+
+        <ErrorBoundary fallback={<div>Error loading transactions</div>}>
+          <Show when={!transactions.loading} fallback={<div>Loading...</div>}>
+            <TransactionList
+              transactions={transactions.latest ?? []}
+              transactionService={transactionService}
+              onDeleteTransaction={handleRefresh}
+            />
+          </Show>
+        </ErrorBoundary>
       </Show>
     </main>
   )

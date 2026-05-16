@@ -3,12 +3,12 @@ import {
   type TransactionCreator,
   type TransactionFormState,
   TransactionFormViewModel
-} from "../../../../src/ui/transactions/TransactionFormViewModel.ts"
-import Transaction, { TransactionType } from "../../../../src/domain/entities/Transaction.ts"
-import { Currency } from "../../../../src/domain/value-objects/Money.ts"
+} from "../../../../../src/ui/transactions/form/TransactionFormViewModel.ts"
+import Transaction, { TransactionType } from "../../../../../src/domain/entities/Transaction.ts"
+import { Currency } from "../../../../../src/domain/value-objects/Money.ts"
 import { createRoot } from "solid-js"
-import type { CreateTransactionDto } from "../../../../src/application/services/TransactionService.ts"
-import { buildTransaction, TEST_REFERENCE_DATE } from "../../../testUtils.ts"
+import type { CreateTransactionDto } from "../../../../../src/application/services/TransactionService.ts"
+import { buildTransaction, TEST_REFERENCE_DATE } from "../../../../testUtils.ts"
 
 describe("TransactionFormViewModel", async () => {
   let mockTransactionCreator: TransactionCreator

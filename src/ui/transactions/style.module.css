@@ -1,24 +1,44 @@
-.transaction-form {
+.transaction-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 1rem;
+}
+
+.transaction-list-date-group {
+    margin-bottom: 2rem;
+}
+
+.transaction-list-date-group h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin: 0 0 .5rem;
+    color: #7f7f7f;
+}
+
+.transaction-list-date-group:last-child {
+    margin-bottom: 0;
+}
+
+.transaction-list-item {
+    margin: 0 0 .5rem;
     display: flex;
-    flex-direction: column;
-    gap: .2rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem;
 }
 
-.transaction-form > div {
-    display: flex;
-    flex-direction: column;
+.transaction-list-item > h1 {
+    font-size: 1.2rem;
+    margin: 0;
 }
 
-.field-error, .form-error {
-    display: block;
-    min-height: 1rem;
-    line-height: 1rem;
-    font-size: 0.75rem;
-    color: #e74c3c;
-    margin-top: .2rem;
+.transaction-list-item > span {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
 }
 
-.form-error {
-    margin-top: 0;
-    margin-bottom: .2rem;
+.transaction-list-item:last-child {
+    margin: 0;
 }

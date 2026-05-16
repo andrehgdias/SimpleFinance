@@ -1,9 +1,9 @@
 import styles from "./style.module.css"
 import { TransactionFormViewModel } from "./TransactionFormViewModel.ts"
-import TransactionService from "../../application/services/TransactionService.ts"
+import TransactionService from "../../../application/services/TransactionService.ts"
 import type { Component, JSX } from "solid-js"
-import { TransactionType } from "../../domain/entities/Transaction.ts"
-import { Currency } from "../../domain/value-objects/Money.ts"
+import { TransactionType } from "../../../domain/entities/Transaction.ts"
+import { Currency } from "../../../domain/value-objects/Money.ts"
 
 export type TransactionFormProps = {
   transactionService: TransactionService
